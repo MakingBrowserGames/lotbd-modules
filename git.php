@@ -33,27 +33,23 @@ function git_dohook($hook, $args)
     switch ($hook) {
         case 'superuser':
             global $session;
+            $gamelog = db_prefix('gamelog');
+            $sql = db_query("SELECT message FROM $gamelog ORDER BY logid+0 DESC LIMIT 1");
+            $row = db_fetch_assoc($sql);
             if ($session['user']['superuser'] & SU_MANAGE_MODULES) {
                 addnav('Mechanics');
                 addnav('Git Pull', 'superuser.php?git=pull');
                 require_once('lib/gamelog.php');
-                switch (httpget('git')) {
-                    case 'pull':
-                        shell_exec('git pull');
-                        $output = shell_exec('git log --format=%B -1');
-                        $output = explode(PHP_EOL, $output);
-                        unset($output[0]);
-                        $output = trim(implode(PHP_EOL, $output));
+                if (httpget('git') == 'pull') {
+                    shell_exec('git pull');
+                    $output = shell_exec('git log --format=%B -1');
+                    $output = explode(PHP_EOL, $output);
+                    unset($output[0]);
+                    $output = trim(implode(PHP_EOL, $output));
+                    if ($output != $row['message']) {
+                        debug($row['message']);
                         gamelog($output, get_module_setting('category', 'changelog'));
-                        break;
-                    case 'submodules':
-                        $output = shell_exec('git submodule foreach git pull');
-                        debug($output);
-                        gamelog(
-                            "updated modules from remote branch.",
-                            get_module_setting('category', 'changelog')
-                        );
-                        break;
+                    }
                 }
             }
             break;
