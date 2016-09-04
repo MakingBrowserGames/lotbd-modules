@@ -480,7 +480,7 @@ function jquerycommentary_run()
                         $isTyping .= appoencode("`@...");
                     }
                 }
-                echo "✏ $isTyping";
+                echo "&#9998; $isTyping";
             }
             else {
                 echo "<br />";
