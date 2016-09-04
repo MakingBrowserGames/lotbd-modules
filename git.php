@@ -50,7 +50,7 @@ function git_dohook($hook, $args)
                     case 'submodules':
                         shell_exec('git submodule foreach git pull');
                         gamelog(
-                            "updated modules from remote branch",
+                            "updated modules from remote branch.",
                             get_module_setting('category', 'changelog')
                         );
                         break;
