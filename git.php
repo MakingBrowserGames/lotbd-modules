@@ -36,7 +36,6 @@ function git_dohook($hook, $args)
             if ($session['user']['superuser'] & SU_MANAGE_MODULES) {
                 addnav('Mechanics');
                 addnav('Git Pull', 'superuser.php?git=pull');
-                addnav('Update Modules', 'superuser.php?git=submodules');
                 require_once('lib/gamelog.php');
                 switch (httpget('git')) {
                     case 'pull':
