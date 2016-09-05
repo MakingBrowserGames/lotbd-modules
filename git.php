@@ -41,9 +41,7 @@ function git_dohook($hook, $args)
                 addnav('Git Pull', 'superuser.php?git=pull');
                 require_once('lib/gamelog.php');
                 if (httpget('git') == 'pull') {
-                    shell_exec(
-                        'git pull && git submodule init && git submodule update && cd modules && git checkout master && git pull'
-                    );
+                    shell_exec('git pull');
                     $output = shell_exec('git log --format=%B -1');
                     $output = explode(PHP_EOL, $output);
                     unset($output[0]);
