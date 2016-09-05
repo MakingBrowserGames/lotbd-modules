@@ -26,6 +26,7 @@ function changelog_install()
     module_addhook('village');
     module_addhook('header-about');
     module_addhook('newday-runonce');
+    module_addhook('translation-save');
     return true;
 }
 
@@ -86,6 +87,10 @@ function changelog_dohook($hook, $args)
             db_query(
                 "UPDATE $gamelog SET date = '$date' WHERE category = '$category'"
             );
+            break;
+        case 'translation-save':
+            require_once('lib/gamelog.php');
+            gamelog(sprintf_translate("`2translated text in the `Q%s`2 section.", $args['uri']));
             break;
     }
     return $args;
