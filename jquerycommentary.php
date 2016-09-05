@@ -76,11 +76,11 @@ function jquerycommentary_dohook($hook, $args)
     switch ($hook)
     {
         case "viewcommentary":
+            if (httpget('ajax') != '1' && $jQueryDiv == 0 && $SCRIPT_NAME != 'moderate.php') {
+                rawoutput("<div class='live-commentary'>");
+                $jQueryDiv++;
+            }
             if ($SCRIPT_NAME != 'moderate.php' && $session['user']['superuser'] & SU_EDIT_COMMENTS && get_module_pref('user_disable') != 1) {
-                if (httpget('ajax') != '1' && $jQueryDiv == 0) {
-                    rawoutput("<div class='live-commentary'>");
-                    $jQueryDiv++;
-                }
                 preg_match_all("/\[([^\]]*)\]/", $args['commentline'], $matches);
                 $text = $matches[1][0];
                 preg_match_all("/removecomment=(\\d*)/", $text, $matches);
