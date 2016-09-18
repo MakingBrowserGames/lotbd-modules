@@ -134,7 +134,8 @@ function changelog_run() {
         output(
             get_module_setting('format'),
             $row['name'],
-            $row['message']
+            $row['message'],
+            true
         );
     }
     page_footer();
