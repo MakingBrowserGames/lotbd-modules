@@ -62,10 +62,6 @@ function git_run()
     $sql = db_query("SELECT message FROM $gamelog ORDER BY logid+0 DESC LIMIT 1");
     $row = db_fetch_assoc($sql);
     page_header();
-    if (httpget('op') == 'pull_modules') {
-        $exec = shell_exec('git submodule sync');
-        var_dump($exec);
-    }
     switch ($op) {
         case 'pull_modules':
                 shell_exec('git submodule sync');
@@ -76,6 +72,7 @@ function git_run()
                 $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
             break;
     }
+    output($exec);
     if ($exec != $row['message']) {
         require_once('lib/gamelog.php');
         gamelog($exec, get_module_setting('category', 'changelog'));
