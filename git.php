@@ -64,7 +64,7 @@ function git_run()
     page_header();
     switch ($op) {
         case 'pull_modules':
-                shell_exec('git submodule sync --recursive');
+                shell_exec('git submodule foreach git pull --rebase');
                 $exec = shell_exec('cd modules && git log -1 --format="%b (<a href=\"http://github.com/stephenKise/xythen-modules/commit/%h\">%h</a>)"');
             break;
         case 'pull_core':
