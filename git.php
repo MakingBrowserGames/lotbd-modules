@@ -59,8 +59,6 @@ function git_run()
 {
     $op = httpget('op');
     $gamelog = db_prefix('gamelog');
-    $sql = db_query("SELECT message FROM $gamelog ORDER BY logid+0 DESC LIMIT 1");
-    $row = db_fetch_assoc($sql);
     page_header();
     switch ($op) {
         case 'pull_modules':
@@ -73,7 +71,9 @@ function git_run()
             break;
     }
     output($exec);
-    if ($exec != $row['message']) {
+    $sql = db_query("SELECT message FROM $gamelog WHERE message = '$exec' ORDER BY logid+0 DESC LIMIT 1");
+    if (db_num_rows($sql) != 1) {
+        $row = db_fetch_assoc($sql);
         require_once('lib/gamelog.php');
         gamelog($exec, get_module_setting('category', 'changelog'));
     }
