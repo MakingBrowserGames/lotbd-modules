@@ -78,7 +78,7 @@ function git_run()
     }
     if ($exec != $row['message']) {
         require_once('lib/gamelog.php');
-        gamelog($output, get_module_setting('category', 'changelog'));
+        gamelog($exec, get_module_setting('category', 'changelog'));
     }
     page_footer();
 }
