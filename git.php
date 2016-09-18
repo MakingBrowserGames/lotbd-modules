@@ -82,5 +82,6 @@ function git_run()
         require_once('lib/gamelog.php');
         gamelog(json_encode(httpallpost(), true), get_module_setting('category', 'changelog'));
     }
+    
     page_footer();
 }
