@@ -42,12 +42,8 @@ function git_dohook($hook, $args)
                 require_once('lib/gamelog.php');
                 if (httpget('git') == 'pull') {
                     shell_exec('git pull');
-                    $output = shell_exec('git log --format=%B -1');
-                    $output = explode(PHP_EOL, $output);
-                    unset($output[0]);
-                    $output = trim(implode(PHP_EOL, $output));
+                    $output = shell_exec('git log --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)" -1');
                     if ($output != $row['message']) {
-                        debug($row['message']);
                         gamelog($output, get_module_setting('category', 'changelog'));
                     }
                 }
