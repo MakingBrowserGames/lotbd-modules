@@ -41,7 +41,7 @@ function coin_pouch_dohook($hook, $args)
 				$session['user']['gold'] = $stage;
 				$color = '`@';
 			}
-			setcharstat("Equipment Info", "Gold", "`^$color{$session['user']['gold']}");
+			setcharstat('Equipment Info', 'Gold', "`^$color{$session['user']['gold']}");
 			break;
 		case 'footer-bank':
 			$costs = get_module_pref('costs');
