@@ -13,6 +13,7 @@ function changelog_getmoduleinfo()
         'settings' => [
             'infonav' => 'Do you want to display this changelog in the village?, bool| 1',
             'category' => 'What category should we list all changes under?, text| Changelog',
+            'default_user' => 'Default name to use of the changelog comes from id of 0?, text| Sytstem',
             'format' => 'How should we format each message?, text| `%%s `@%s`0`n`n',
             'Note that you `Q`bneed`b two &quot;%s&quot;`0 for the changlog to work properly!, note',
         ],
@@ -131,6 +132,9 @@ function changelog_run() {
     );
     output("`c`@`bChangelog`b`c`n");
     while ($row = db_fetch_assoc($sql)) {
+        if ($row['name'] == '') {
+            $row['name'] = get_module_setting('default_user');
+        }
         output(
             get_module_setting('format'),
             $row['name'],
