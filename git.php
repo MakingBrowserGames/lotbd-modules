@@ -62,7 +62,7 @@ function git_run()
     page_header();
     switch ($op) {
         case 'pull_modules':
-                shell_exec('git subtree pull --prefix=modules modules master');
+                shell_exec('git pull -s subtree modules master');
                 $repo = "xythen-modules";
             break;
         case 'pull_core':
