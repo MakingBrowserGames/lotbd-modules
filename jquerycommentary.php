@@ -59,9 +59,10 @@ function jquerycommentary_getmoduleinfo()
 
 function jquerycommentary_install()
 {
-    module_addhook("insertcomment");
-    module_addhook("viewcommentary");
-    module_addhook("endofcommentary");
+    module_addhook('insertcomment');
+    module_addhook('javascript');
+    module_addhook('viewcommentary');
+    module_addhook('endofcommentary');
     return true;
 }
 
@@ -75,6 +76,9 @@ function jquerycommentary_dohook($hook, $args)
     global $jQueryDiv, $jQueryScript, $session, $output, $_SERVER, $SCRIPT_NAME;
     switch ($hook)
     {
+        case "javascript":
+            // Decouple javascript and place link here.
+            break;
         case "viewcommentary":
             if (httpget('ajax') != '1' && $jQueryDiv == 0 && $SCRIPT_NAME != 'moderate.php') {
                 rawoutput("<div class='live-commentary'>");

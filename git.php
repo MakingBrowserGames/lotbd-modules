@@ -63,12 +63,14 @@ function git_run()
     switch ($op) {
         case 'pull_modules':
                 shell_exec('git subtree pull --prefix=modules modules master');
+                $repo = "xythen-modules";
             break;
         case 'pull_core':
                 shell_exec('git pull');
+                $repo = "Legend-of-the-Green-Dragon";
             break;
     }
-    $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
+    $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/$repo/commit/%h\">%h</a>)"');
     output($exec);
     $sql = db_query("SELECT message FROM $gamelog WHERE message = '$exec' ORDER BY logid+0 DESC LIMIT 1");
     if (db_num_rows($sql) != 1) {
