@@ -38,13 +38,13 @@ function git_dohook($hook, $args)
                 $gamelog = db_prefix('gamelog');
                 $core = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
                 $sql = db_query("SELECT logid FROM $gamelog WHERE message = '$core' LIMIT 1");
-                if (db_num_rows($sql) > 0) {
+                if (db_num_rows($sql) == 0) {
                     require_once('lib/gamelog.php');
                     gamelog($core, $category);
                 }
                 $modules = shell_exec('cd modules && git log -1 --format="%b (<a href=\"http://github.com/stephenKise/xythen-modules/commit/%h\">%h</a>)"');
                 $sql = db_query("SELECT logid FROM $gamelog WHERE message = '$modules' LIMIT 1");
-                if (db_num_rows($sql) > 0) {
+                if (db_num_rows($sql) == 0) {
                     require_once('lib/gamelog.php');
                     gamelog($modules, $category);
                 }
