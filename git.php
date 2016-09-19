@@ -62,15 +62,14 @@ function git_run()
     page_header();
     switch ($op) {
         case 'pull_modules':
-                shell_exec('git pull -s subtree modules master');
-                $repo = "xythen-modules";
+                shell_exec('git submodule update --remote --recursive');
+                $exec = shell_exec('cd modules && git log -1 --format="%b (<a href=\"http://github.com/stephenKise/xythen-modules/commit/%h\">%h</a>)"');
             break;
         case 'pull_core':
                 shell_exec('git pull');
-                $repo = "Legend-of-the-Green-Dragon";
+                $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
             break;
     }
-    $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/$repo/commit/%h\">%h</a>)"');
     output($exec);
     $sql = db_query("SELECT message FROM $gamelog WHERE message = '$exec' ORDER BY logid+0 DESC LIMIT 1");
     if (db_num_rows($sql) != 1) {
