@@ -62,14 +62,13 @@ function git_run()
     page_header();
     switch ($op) {
         case 'pull_modules':
-                shell_exec('git submodule foreach git pull --rebase');
-                $exec = shell_exec('cd modules && git log -1 --format="%b (<a href=\"http://github.com/stephenKise/xythen-modules/commit/%h\">%h</a>)"');
+                shell_exec('git subtree pull --prefix=modules modules master');
             break;
         case 'pull_core':
                 shell_exec('git pull');
-                $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
             break;
     }
+    $exec = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
     output($exec);
     $sql = db_query("SELECT message FROM $gamelog WHERE message = '$exec' ORDER BY logid+0 DESC LIMIT 1");
     if (db_num_rows($sql) != 1) {
@@ -77,9 +76,9 @@ function git_run()
         require_once('lib/gamelog.php');
         gamelog($exec, get_module_setting('category', 'changelog'));
     }
-    if (httpallpost()) {
+    if ($_POST['payload']) {
         require_once('lib/gamelog.php');
-        gamelog(json_encode(httpallpost(), true), get_module_setting('category', 'changelog'));
+        gamelog(json_encode($_POST['payload'], true), get_module_setting('category', 'changelog'));
     }
 
     page_footer();
