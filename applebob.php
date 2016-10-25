@@ -162,4 +162,3 @@ function applebob_run()
     }
     page_footer();
 }
-?>

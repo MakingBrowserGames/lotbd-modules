@@ -72,4 +72,3 @@ function funddrive_dohook($hook, $args)
     }
     return $args;
 }
-?>
