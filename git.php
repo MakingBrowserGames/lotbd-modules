@@ -34,6 +34,11 @@ function git_dohook($hook, $args)
         case 'superuser':
             global $session;
             if ($session['user']['superuser'] & SU_MANAGE_MODULES) {
+                addnav('Mechanics');
+                addnav('Pull LotGD Source', 'superuser.php?git=pull');
+                if (httpget('git') == 'pull') {
+                    shell_exec('git pull');
+                }
                 $category = get_module_setting('category', 'changelog');
                 $gamelog = db_prefix('gamelog');
                 $core = shell_exec('git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"');
