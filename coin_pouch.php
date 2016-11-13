@@ -37,7 +37,7 @@ function coin_pouch_dohook($hook, $args)
             global $charstat_info, $session;
             unset($charstat_info['Personal Info']['Gold']);
             $stage = get_module_pref('stage');
-            if ($session['user']['gold'] > $stage) {
+            if ($session['user']['gold'] >= $stage) {
                 $session['user']['gold'] = $stage;
                 $color = '`@';
             }
