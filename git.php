@@ -14,8 +14,8 @@ function git_getmoduleinfo()
         ],
         'download' => 'nope',
         'settings' => [
-            'core' => 'Recent status of the core:, viewonly'
-            'modules' => 'Recent status of the modules:, viewonly'
+            'core' => 'Recent status of the core:, viewonly',
+            'modules' => 'Recent status of the modules:, viewonly',
         ]
     ];
     return $info;
