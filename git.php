@@ -48,12 +48,14 @@ function git_dohook($hook, $args)
                     'git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"'
                 );
                 if ($core != get_module_setting('core')) {
+                    set_module_Setting('core', $core);
                     gamelog($core, $category);
                 }
                 $modules = shell_exec(
                     'cd modules && git log -1 --format="%b (<a href=\"http://github.com/stephenKise/xythen-modules/commit/%h\">%h</a>)"'
                 );
                 if ($modules != get_module_setting('modules')) {
+                    set_module_setting('modules', $modules);
                     gamelog($modules, $category);
                 }
             }
