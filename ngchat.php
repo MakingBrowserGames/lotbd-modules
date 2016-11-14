@@ -68,7 +68,7 @@ function ngchat_dohook($hook, $args)
                         <div class='commentary-item' ng-repeat='x in comments'>");
                 if ($session['user']['superuser'] & SU_EDIT_USERS) {
                     output(
-                        "<div style='float: left; margin-right: 5px;'>`2[`0<a href='' ng-click='removeComment(x.commentid)'>X</a>`2]</div>",
+                        "<a href=''  style='float: left; margin-right: 5px; display: inline-block;' ng-click='removeComment(x.commentid)'>`2[`0X`2]`0</a>",
                      true);
                 }
                 rawoutput("<span ng-bind-html='formatColors(x.comment, true, x.name, x.author, x.deleted)'></span>
@@ -271,7 +271,7 @@ function ngchatRemoveComment()
     }
     $post = filter_var($post, FILTER_SANITIZE_NUMBER_INT);
     $sql = db_query(
-        "SELECT author FROM $commentary
+        "SELECT author, deleted FROM $commentary
         WHERE commentid = '$commentid'
         LIMIT 1"
     );

@@ -52,7 +52,6 @@ angular
         time = new Date;
         x = Math.floor((time - tempTime)/1000);
         if (x < 5) {
-
             $scope.alertMessage = 'Please wait ' + (5 - x) + ' seconds before posting!';
             $scope.alert = true;
             return false;
@@ -139,17 +138,19 @@ angular
         $scope.timeRun = 0;
     }
     $scope.formatColors = (text, commentary, user = $scope.username, acctid = 0, deleted = 0) => {
-        var out = user;
+        var out = "<span class='colWhite'>" + user;
         if (acctid != 0) {
             out = "<a href='bio.php?char=" + acctid + "&ret=" + $scope.URI + "'>" + out + "</a>";
         }
         if (deleted == 1) {
             out = "<div style='opacity: .5;'>" + out;
         }
-        var end = '</span>';
+        var end = '</span></span>';
         var x = 0;
         var y = '';
         var z = '';
+        var bold = 0;
+        var italics = 0;
         if (commentary) {
             if (text.substr(0, 2) == '::') {
                 x = 2;
@@ -320,6 +321,24 @@ angular
                             break;
                         case 'M':
                             out += '</span><span class=\'coltan\'>';
+                            break;
+                        case 'b':
+                            bold++;
+                            if (bold % 2 != 0) {
+                                out += '<span class=\'bold\'>';
+                            }
+                            else {
+                                out += '</span>';
+                            }
+                            break;
+                        case 'i':
+                            italics++;
+                            if (italics % 2 != 0) {
+                                out += '<i>';
+                            }
+                            else {
+                                out += '</i>';
+                            }
                             break;
                     }
                     x++;
