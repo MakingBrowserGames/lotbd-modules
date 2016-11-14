@@ -7,7 +7,7 @@ function blockgrottolinks_getmoduleinfo(): array
         'name' => 'Block Grotto Links',
         'author' => '`&`bStephen Kise`b',
         'version' => '0.0.1',
-        'category' => 'Adminsitrative',
+        'category' => 'Administrative',
         'description' => 'Blocks the core functions that are not necessary',
         'hooks' => [
             'superuser'
