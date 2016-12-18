@@ -44,17 +44,19 @@ function git_dohook($hook, $args)
                     shell_exec('git pull');
                 }
                 $category = get_module_setting('category', 'changelog');
-                $core = shell_exec(
+                $core = @shell_exec(
                     'git log -1 --format="%b (<a href=\"http://github.com/stephenKise/Legend-of-the-Green-Dragon/commit/%h\">%h</a>)"'
                 );
-                if ($core != get_module_setting('core')) {
+                if ($core != get_module_setting('core')
+                    && $core != '') {
                     set_module_Setting('core', $core);
                     gamelog($core, $category);
                 }
-                $modules = shell_exec(
+                $modules = @shell_exec(
                     'cd modules && git log -1 --format="%b (<a href=\"http://github.com/stephenKise/xythen-modules/commit/%h\">%h</a>)"'
                 );
-                if ($modules != get_module_setting('modules')) {
+                if ($modules != get_module_setting('modules')
+                    && $modules != '') {
                     set_module_setting('modules', $modules);
                     gamelog($modules, $category);
                 }
