@@ -1,0 +1,187 @@
+.pageheader {
+    display: none;
+}
+
+.mail-header,
+.mail-inbox,
+.mail-inbox h1,
+.mail-list-messages,
+.mail-message-container {
+    width: 100%;
+    max-width: 1080px;
+    min-width: 300px;
+    margin: 0px auto;
+}
+
+.mail-header {
+    height: .5em;
+    margin-bottom: 2.5em;
+    padding: 0;
+}
+
+.mail-header ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mail-header li {
+    float: left;
+    text-align: center;
+    padding: 10px 20px;
+}
+
+.mail-inbox h1 {
+    text-align: center;
+}
+
+.mail-list-messages {
+    border-collapse: collapse;
+}
+
+.mail-list-messages {
+    width: 100%;
+    max-width: 1080px;
+}
+
+.mail-list-messages tbody tr:hover {
+    background-color: rgba(100,100,100,.1);
+    cursor: pointer;
+}
+
+.mail-list-messages th:nth-child(2) {
+    padding-right: 3em;
+}
+
+.mail-list-messages th:nth-child(2),
+.mail-list-messages td:nth-child(2),
+.mail-list-messages td:nth-child(3) {
+    text-align: right;
+    text-transform: capitalize;
+}
+
+.mail-list-messages td {
+    padding: 5px;
+}
+
+.mail-list-messages td:nth-child(2) ::before {
+    content: '\270E  ';
+    color: #EAB523;
+}
+
+.mail-message-container {
+    font-size: 16px;
+    float: left;
+    padding: 10px 0px;
+}
+
+.mail-reply-from-me {
+    float: right;
+    display: inline-block;
+    padding: 10px;
+    margin-left: 3em;
+    border: 1px solid rgba(50, 50, 50, .3);
+    border-radius: 5px;
+    min-width: 55%;
+}
+
+.mail-reply-from-me .message-details {
+    text-align: right;
+}
+
+.mail-reply-from-user {
+    display: inline-block;
+    padding: 10px;
+    margin-right: 3em;
+    border: 1px solid rgba(234, 181, 35, .3);
+    border-radius: 5px;
+    min-width: 55%;
+}
+
+.message-details {
+    font-size: 12px;
+    padding-bottom: 5px;
+    text-transform: capitalize;
+}
+
+.message-subject:hover {
+    cursor: pointer;
+}
+
+.message-title-edit {
+    max-width: 500px;
+    display: none;
+    margin: 0px auto;
+}
+
+.message-title-edit input {
+    display: inline-block;
+    height: 2em !important;
+    box-sizing: border-box;
+    margin: 0px;
+}
+
+.message-title-edit input[name='message-subject-edit'] {
+    width: 275px;
+}
+
+.message-title-edit input[type='submit'] {
+    width: 50px;
+    margin-left: -10px;
+    position: fixed;
+    z-index: -1;
+    float: right;
+}
+
+.message-reply {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    background-color: #222;
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 3px;
+}
+
+.message-reply textarea {
+    position: absolute;
+    resize: none;
+    font-size: 14px;
+    background-color: transparent;
+    border-radius: 0px;
+    border: 0px;
+    border-right: 1px solid yellow;
+    box-sizing: border-box;
+    width: calc(100% - 52px);
+    padding: 0px;
+    padding-left: 5px;
+    margin: 2px;
+    display: inline;
+    float: left;
+    height: 95% !important;
+}
+
+.message-reply textarea:focus,
+.message-reply textarea:hover,
+.message-reply input[type='submit']:focus,
+.message-reply input[type='submit']:hover {
+    background-color: transparent;
+}
+
+.message-reply input[type='submit'] {
+    box-sizing: border-box;
+    background-color: transparent;
+    border-radius: 0px;
+    display: inline;
+    float: right;
+    min-width: 0px;
+    width: 50px;
+    max-width: 50px;
+    height: 100px !important;
+    margin-top: 0px;
+    margin-right: 0px;
+}
+
+.message-reply input[type='submit']:hover {
+    cursor: pointer;
+}
