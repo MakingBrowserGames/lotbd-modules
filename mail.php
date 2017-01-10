@@ -350,7 +350,7 @@ function mailReply(): bool
         $session['user']['acctid'],
         $post['id']
     );
-    header("Location: runmodule.php?module=mail&op=view&id={$id}#reply");
+    header("Location: runmodule.php?module=mail&op=view&id={$post['id']}#reply");
     return false;
 }
 
