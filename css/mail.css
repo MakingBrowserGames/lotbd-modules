@@ -70,7 +70,7 @@
 }
 
 .mail-message-container {
-    font-size: 16px;
+    font-size: 14px;
     float: left;
     padding: 10px 0px;
 }
@@ -126,6 +126,7 @@
 }
 
 .message-title-edit input[type='submit'] {
+    color: #F2E2A9;
     width: 50px;
     margin-left: -10px;
     position: fixed;
@@ -138,27 +139,44 @@
     display: inline-block;
     width: 100%;
     background-color: #222;
-    padding-left: 2px;
-    padding-right: 2px;
+    padding: 2px;
     border-radius: 3px;
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.message-reply:hover {
+    background-color: #111;
 }
 
 .message-reply textarea {
     position: absolute;
     resize: none;
-    font-size: 14px;
+    font-size: 12px;
     background-color: transparent;
     border-radius: 0px;
     border: 0px;
-    border-right: 1px solid yellow;
+    border-right: 0px solid #EAB523;
     box-sizing: border-box;
     width: calc(100% - 52px);
     padding: 0px;
     padding-left: 5px;
+    padding-right: 8px;
     margin: 2px;
+    margin-top: 0px;
     display: inline;
     float: left;
-    height: 95% !important;
+    height: 95%;
+    -webkit-transition: all 0.15s ease-in-out;
+    -moz-transition: all 0.15s ease-in-out;
+    transition: all 0.15s ease-in-out;
+}
+
+.message-reply textarea:focus,
+.message-reply textarea:hover {
+    border-right: 3px solid #EAB523;
+    padding-right: 5px;
 }
 
 .message-reply textarea:focus,
@@ -170,6 +188,7 @@
 
 .message-reply input[type='submit'] {
     box-sizing: border-box;
+    color: #F2E2A9;
     background-color: transparent;
     border-radius: 0px;
     display: inline;

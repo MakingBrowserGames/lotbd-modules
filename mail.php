@@ -35,6 +35,11 @@ function mail_install(): bool
     // CREATE ORIGINATORS TABLE. THIS WILL ACT AS MANAGEMENT OF WHO CAN VIEW GROUP MESSAGES.
     // Originators
     // id | origin | acctid | owner | invitor | dateissued
+    $mail = db_prefix('mail');
+    db_query(
+        "ALTER TABLE $mail 
+        CHANGE sent DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+    );
     return true;
 }
 
@@ -277,7 +282,10 @@ function mailView(): bool
     );
     $sortedMessages = [];
     while ($row = db_fetch_assoc($sql)) {
+        //debug($row);
         $title = $row['subject'];
+        $row['body'] = stripslashes($row['body']);
+        $row['body'] = nl2br($row['body']);
         array_push($sortedMessages, $row);
     }
     $sortedMessages = array_reverse($sortedMessages);
@@ -315,14 +323,34 @@ function mailView(): bool
         "
             <form action='runmodule.php?module=mail&op=reply&id={$id}'
                 method='POST'>
-                <div class='message-reply'>
-                    <textarea name='reply' id='message-reply-form' class='input'>
-                    </textarea>
+                <div class='message-reply' id='message-reply' contenteditable>
+                    <textarea name='reply' id='message-reply-form'
+                        class='input'></textarea>
                     <input type='submit' value=' Send'>
+                    <input type='hidden' name='id' value='{$id}'>
+                    <input type='hidden' name='to' value='{$row['msgfrom']}'>
+                    <input type='hidden' name='subject'
+                        value='{$title}'>
                 </div>
             </form>
+            <a name='last'></a>
         </div>"
     );
+    return false;
+}
+
+function mailReply(): bool
+{
+    global $session, $HTTP_POST_VARS;
+    $post = httpallpost();
+    sendMail(
+        $post['to'],
+        $post['reply'],
+        $post['subject'],
+        $session['user']['acctid'],
+        $post['id']
+    );
+    header("Location: runmodule.php?module=mail&op=view&id={$id}#reply");
     return false;
 }
 
@@ -339,10 +367,11 @@ function sendMail(
     $accounts = db_prefix('accounts');
     $message = addslashes(sanitizeHTML($message));
     $sql = db_query(
-        "INSERT INTO $mail (msgto, msgfrom, message, originator)
-        VALUES ($recipient, $sender, '$message', $originator)"
+        "INSERT INTO $mail (msgto, msgfrom, subject, body, originator)
+        VALUES ($recipient, $sender, '$subject', '$message', $originator)"
     );
-    if (db_error($sql)) {
+    if (db_error()) {
+        debug(db_error());
         return false;
     }
     return true;
