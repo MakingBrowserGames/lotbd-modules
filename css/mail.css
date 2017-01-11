@@ -44,7 +44,8 @@
     max-width: 1080px;
 }
 
-.mail-list-messages tbody tr:hover {
+.mail-list-messages tbody tr:hover,
+.compose-list-users tbody tr:hover {
     background-color: rgba(100,100,100,.1);
     cursor: pointer;
 }
@@ -203,4 +204,12 @@
 
 .message-reply input[type='submit']:hover {
     cursor: pointer;
+}
+
+.message-to {
+    padding-bottom: 50px;
+}
+
+.new-message {
+    display: none;
 }

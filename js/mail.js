@@ -1,56 +1,53 @@
-var replyContainer, replyForm;
-
-
 window.onload = () => {
-    var rows = document.getElementsByName('messages'),
+    var messages = document.getElementsByName('messages'),
         subject = document.getElementById('message-subject'),
-        uri;
+        replyForm = document.getElementById('message-reply-form'),
+        users = document.getElementsByName('users')
 
-
-    replyContainer = document.getElementById('message-reply');
-    replyForm = document.getElementById('message-reply-form');
-    for (var i=0,len=rows.length; i<len; i++){
-        rows[i].onclick = function(){
-            uri = this.getAttribute('data-originator');
-            window.location = 'runmodule.php?module=mail&op=view&id=' + uri + '#last';
-        };
+    if (subject) {
+        subject.addEventListener('click', editTitle);
+        subject.addEventListener('touchend', editTitle);
     }
-
-    subject.addEventListener('click', editTitle);
-    subject.addEventListener('touchend', editTitle);
-    /*replyForm.addEventListener('focus', focusForm);
-    replyForm.addEventListener('blur', blurForm);*/
-
-    replyForm.onmouseover = () => {
-        replyContainer.style.backgroundColor = '#111';
-    }
-    replyForm.onmouseout = () => {
-        if (document.activeElement.name != 'reply') {
+    if (replyForm) {
+        replyContainer = document.getElementById('message-reply')
+        replyForm.onmouseover = () => {
+            replyContainer.style.backgroundColor = '#111';
+        }
+        replyForm.onmouseout = () => {
+            if (document.activeElement.name != 'reply') {
+                replyContainer.style.backgroundColor = '#222';
+            }
+        }
+        replyForm.onfocus = () => {
+            replyContainer.style.backgroundColor = '#111';
+        }
+        replyForm.onblur = () => {
             replyContainer.style.backgroundColor = '#222';
         }
     }
-    replyForm.onfocus = () => {
-        replyContainer.style.backgroundColor = '#111';
+    for (var i = 0, len = messages.length; i < len; i++) {
+        messages[i].onclick = function () {
+            origin = this.getAttribute('data-originator');
+            window.location = 'runmodule.php?module=mail&op=view&id=' + origin + '#last';
+        };
     }
-    replyForm.onblur = () => {
-        replyContainer.style.backgroundColor = '#222';
+    for (var i = 0, len = users.length; i < len; i++) {
+        users[i].onclick = function () {
+            userSelect = document.getElementById('message-to');
+            composeContainer = document.getElementById('new-message');
+            to = document.getElementById('to');
+            userSelect.innerHTML = this.getAttribute('data-name') + '</span>';
+            userSelect.style.paddingBottom = '0px';
+            composeContainer.style.display = 'block';
+            to.value = this.getAttribute('data-acctid');
+        }
     }
 }
 
 function editTitle() {
     var form = document.getElementById('message-subject-form'),
         subject = document.getElementById('message-subject');
-    console.log(subject.style);
     subject.style.display = 'none';
     form.style.display = 'block';
-    return false;
-}
-
-function focusForm() {
-    replyContainer.style.backgroundColor = '#111';
-    return false;
-}
-function blurForm() {
-    replyContainer.style.backgroundColor = '#222';
     return false;
 }

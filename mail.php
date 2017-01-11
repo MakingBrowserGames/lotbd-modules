@@ -107,6 +107,33 @@ function mail_run(): bool
     return false;
 }
 
+function sendMail(
+    int $recipient,
+    string $message,
+    string $subject,
+    int $sender,
+    int $originator
+): bool
+{
+    require_once('lib/sanitize.php');
+    $mail = db_prefix('mail');
+    $accounts = db_prefix('accounts');
+    $message = addslashes(sanitizeHTML($message));
+    if ($originator < 1) {
+        $sql = db_query("SELECT MAX(originator) AS n FROM $mail LIMIT 1");
+        $originator = db_fetch_assoc($sql)['n'] + 1;
+    }
+    $sql = db_query(
+        "INSERT INTO $mail (msgto, msgfrom, subject, body, originator)
+        VALUES ($recipient, $sender, '$subject', '$message', $originator)"
+    );
+    if (db_error()) {
+        debug(db_error());
+        return false;
+    }
+    return true;
+}
+
 function displayMailHeader(): bool
 {
     rawoutput(
@@ -164,16 +191,36 @@ function canViewMessage(int $id): bool
     return true;
 }
 
-function mailBuddy(): bool
+function addUserToOrigin(int $origin, int $user): bool
 {
-    require_once('lib/redirect.php');
     global $session;
-    $id = httpget('id');
-    $contacts = json_decode(get_module_pref('contacts'), true);
-    $contacts[$id] = date('Y-m-d H:i:s', time());
-    set_module_pref('contacts', json_encode($contacts));
-    redirect($session['user']['restorepage']);
-    return false;
+    $mail = db_prefix('mail');
+    $mailOrigins = db_prefix('mail_origins');
+    $invitor = (int) $session['user']['acctid'];
+    $sql = db_query(
+        "SELECT DISTINCT msgfrom, msgto FROM $mail WHERE originator = '$origin'"
+    );
+    $isOriginalUser = false;
+    while ($row = db_fetch_assoc($sql)) {
+        if ($invitor == $row['msgfrom'] ||
+            $invitor == $row['msgto']) {
+            $isOriginalUser = true;
+        }
+    }
+    if ($isOriginalUser != true) {
+        debuglog(
+            "tried to illegally invite a person to conversation id $origin"
+        );
+        return false;
+    }
+    db_query(
+        "INSERT INTO $mailOrigins (origin, acctid, invitor)
+        VALUES ($origin, $user, $invitor)"
+    );
+    if (db_error()) {
+        debug(db_error());
+    }
+    return true;
 }
 
 function mailBlock(): bool
@@ -203,6 +250,18 @@ function mailUnblock(): bool
     return false;
 }
 
+function mailBuddy(): bool
+{
+    require_once('lib/redirect.php');
+    global $session;
+    $id = httpget('id');
+    $contacts = json_decode(get_module_pref('contacts'), true);
+    $contacts[$id] = date('Y-m-d H:i:s', time());
+    set_module_pref('contacts', json_encode($contacts));
+    redirect($session['user']['restorepage']);
+    return false;
+}
+
 function mailInbox(): bool
 {
     global $session;
@@ -222,7 +281,7 @@ function mailInbox(): bool
     $sql = db_query(
         "SELECT * FROM (SELECT m.*, a.name, a.loggedin FROM $mail AS m
         RIGHT JOIN $accounts AS a ON m.msgfrom = a.acctid
-        WHERE msgto = '$user' GROUP BY originator, messageid DESC) as tmp
+        WHERE (msgto = '$user' OR msgfrom = '$user') GROUP BY originator, messageid DESC) as tmp
         GROUP BY tmp.originator ORDER BY seen+0 ASC"
     );
     while ($row = db_fetch_assoc($sql)) {
@@ -293,7 +352,8 @@ function mailView(): bool
         "<div class='mail-inbox'>
             <h1 id='message-subject'>{$title}</h1>
             <form action='runmodule.php?module=mail&op=title&id={$id}'
-                class='message-title-edit' id='message-subject-form'>
+                class='message-title-edit' id='message-subject-form'
+                method='POST'>
                 <input name='message-subject-edit'
                     value='{$title}'>
                 <input type='submit' value='Submit'>
@@ -341,7 +401,7 @@ function mailView(): bool
 
 function mailReply(): bool
 {
-    global $session, $HTTP_POST_VARS;
+    global $session;
     $post = httpallpost();
     sendMail(
         $post['to'],
@@ -350,29 +410,81 @@ function mailReply(): bool
         $session['user']['acctid'],
         $post['id']
     );
-    header("Location: runmodule.php?module=mail&op=view&id={$post['id']}#reply");
+    header("Location: runmodule.php?module=mail&op=view&id={$post['id']}#last");
     return false;
 }
 
-function sendMail(
-    int $recipient,
-    string $message,
-    string $subject,
-    int $sender,
-    int $originator
-): bool
+function mailCompose(): bool
 {
-    require_once('lib/sanitize.php');
-    $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
-    $message = addslashes(sanitizeHTML($message));
-    $sql = db_query(
-        "INSERT INTO $mail (msgto, msgfrom, subject, body, originator)
-        VALUES ($recipient, $sender, '$subject', '$message', $originator)"
+    $to = httpPostClean('message-to');
+    $search = implode('%', str_split($to));
+
+    output("`@");
+    rawoutput(
+        "<div class='message-to' id='message-to'>
+        Who would you like to message?</span><br>
+            <form action='runmodule.php?module=mail&op=compose'
+                method='POST'>
+                <input type='text' name='message-to' id='message-to' value='{$to}'>
+                <input type='submit' value='Search'>
+            </form>
+            <table class='compose-list-users'>
+            <thead>
+                <th>User</th>
+            </thead>"
     );
-    if (db_error()) {
-        debug(db_error());
-        return false;
+    $sql = db_query(
+        "SELECT name, login, loggedin, acctid FROM $accounts
+        WHERE (name LIKE '%$search%' OR login LIKE '%$search%')
+        ORDER BY loggedin DESC LIMIT 0, 10"
+    );
+    while ($row = db_fetch_assoc($sql)) {
+        output(
+            sprintf(
+                "<tr name='users' data-acctid='%s' data-name='%s'>
+                    <td>`^%s `#%s</td>
+                </tr>",
+                $row['acctid'],
+                full_sanitize($row['name']),
+                $row['name'],
+                $row['loggedin'] ? "`#(online)" : ""
+            ),
+            true
+        );
     }
-    return true;
+    rawoutput(
+        "       </table>
+            </form>
+        </div>"
+    );
+    rawoutput(
+        "<form action='runmodule.php?module=mail&op=newMessage' id='new-message'
+                class='new-message' method='POST'>
+            <input type='text' name='subject' id='subject'
+                placeholder='Message Subject'>
+            <div class='message-reply' id='message-reply'>
+                <input type='hidden' name='to' id='to' value='{$row['msgfrom']}'>
+                <textarea name='reply' id='message-reply-form'
+                    class='input'></textarea>
+                <input type='submit' value=' Send'>
+            </div>
+        </form>"
+    );
+    return false;
+}
+
+function mailNewMessage(): bool
+{
+    global $session;
+    $post = httpallpost();
+    sendMail(
+        $post['to'],
+        $post['reply'],
+        $post['subject'],
+        $session['user']['acctid'],
+        0
+    );
+    //header("Location: runmodule.php?module=mail&op=inbox");
+    return false;
 }
