@@ -5,11 +5,9 @@ function creationcolor_getmoduleinfo()
     $info = [
         'name' => 'Creation Color',
         'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'version' => '1.0',
         'category' => 'Account',
-        'description' =>
-            'Allow players to choose their name color when they create a character.',
-        'download' => 'nope',
+        'description' => 'Characters start with one selected color.',
         'prefs' => [
             'color' => 'Color the player chose upon account creation, viewonly| `&',
         ]
@@ -45,15 +43,23 @@ function creationcolor_dohook($hook, $args)
             }
             break;
         case 'create-form':
-            rawoutput("<label for='color'>Choose your default color: </label> <select name='color'>");
-            rawoutput("<option value='`!'>Blue</option>");
-            rawoutput("<option value='`@'>Green</option>");
-            rawoutput("<option value='`#'>Cyan</option>");
-            rawoutput("<option value='`$'>Red</option>");
-            rawoutput("<option value='`%'>Magenta</option>");
-            rawoutput("<option value='`^'>Yellow</option>");
-            rawoutput("<option value='`&' selected>White</option>");
-            rawoutput("<option value='`)'>Gray</option>");
+            $possibleColors = [
+                '`!' => 'Blue',
+                '`@' => 'Green',
+                '`#' => 'Cyan',
+                '`$' => 'Red',
+                '`%' => 'Magenta',
+                '`^' => 'Yellow',
+                '`&' => 'White',
+                '`)' => 'Gray'
+            ];
+            rawoutput(
+                "<label for='color'>Choose your default color:</label>
+                <select name='color'>"
+            );
+            foreach ($possibleColors as $code => $color) {
+                rawoutput("<option value='$code'>$color</option>");
+            }
             rawoutput("</select><br/><br/>");
             break;
         case 'check-create':
@@ -64,7 +70,12 @@ function creationcolor_dohook($hook, $args)
             }
             break;
         case 'process-create':
-            set_module_pref('color', httppost('color'), 'creationcolor', $args['acctid']);
+            set_module_pref(
+                'color',
+                httppost('color'),
+                'creationcolor',
+                $args['acctid']
+            );
             break;
     }
     return $args;
