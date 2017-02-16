@@ -4,12 +4,11 @@ function viewcommentaryargs_getmoduleinfo()
 {
     $info = [
         'name' => 'Additional Commentary Args',
-        'author'=> '`&`bStephen Kise`b',
-        'version' => '0.1',
-        'category' => 'Commentary',
+        'author'=> 'Stephen Kise',
+        'version' => '1.0',
+        'category' => 'Administrative',
         'description' =>
-            'Adds additional arguments for the &quot;viewcommentary&quot; hook. ',
-        'download' => 'nope',
+            'Adds more variables to the viewcommentary args.'
     ];
     return $info;
 }
