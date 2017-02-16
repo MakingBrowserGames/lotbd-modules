@@ -55,7 +55,7 @@ function faq_run()
         $subOp = httpget('subop');
     }
     popup_header('FAQ');
-    $args = [];
+    $args = ['Overview' => 'runmodule.php?module=faq'];
     $articles = modulehook('faq-list', $args);
     rawoutput(
         "<div class='faq-navigation'>
