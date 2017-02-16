@@ -1,0 +1,43 @@
+.faq-navigation ul,
+.faq-navigation li,
+div.faq-navigation {
+    margin: 0px;
+    padding: 0px
+}
+
+li.faq-navigation-header {
+    font-size: 1.5em;
+    font-family: Merced;
+    color: #F4D446;
+    text-align: center;
+    padding-top: 25px;
+}
+
+div.faq-navigation {
+    float: left;
+    margin: 0px 25px;
+    display: block;
+}
+
+.faq-navigation ul {
+    list-style: none;
+}
+
+div.faq-information {
+    display: inherit;
+    margin: 0px 5px;
+    padding: 5px;
+}
+
+table.superuser-list {
+    min-width: 500px;
+    border-collapse: collapse;
+}
+
+.superuser-list td {
+    border-bottom: 1px solid rgba(244, 212, 70, .3);
+}
+
+.superuser-list td:nth-child(even) {
+    text-align: right;
+}
