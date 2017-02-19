@@ -9,7 +9,7 @@ function aboutThisServer_getmoduleinfo()
         'category' => 'Administrative',
         'description' => 'Changes the way the about page is displayed.',
         'allowanonymous' => true,
-
+        'override_forced_nav' => true,
         'settings' => [
             'name' => 'Name of the server:, text| Legend of the Green Dragon',
             'short_name' => 'Short name of the server, text| LotGD',
