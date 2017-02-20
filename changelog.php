@@ -10,6 +10,7 @@ function changelog_getmoduleinfo()
         'description' =>
             'Display all changes made on the server.',
         'download' => 'nope',
+        'allowanonymous' => true,
         'settings' => [
             'infonav' => 'Do you want to display this changelog in the village?, bool| 1',
             'category' => 'What category should we list all changes under?, text| Changelog',
@@ -26,6 +27,7 @@ function changelog_install()
     module_addhook('header-modules');
     module_addhook('village');
     module_addhook('header-about');
+    module_addhook_priority('about', 2);
     module_addhook('newday-runonce');
     module_addhook('translation-save');
     return true;
@@ -40,26 +42,20 @@ function changelog_dohook($hook, $args)
 {
     switch ($hook) {
         case 'header-modules':
+            require_once('lib/gamelog.php');
             $module = httppost('module') ?: httpget('module');
             $op = httpget('op');
-            if ($module != '') {
-                if (substr($op, -1) == 'e') {
-                    $op = substr($op, 0, -1);
-                }
-                else if ($op == 'mass') {
-                    $method = array_keys(httpallpost())[1];
-                    if (substr($method, -1) == 'e') {
-                        $method = substr($method, 0, -1);
-                    }
+            if ($op == 'mass') {
+                $method = array_keys(httpallpost())[1];
+                if ($method == 'install') {
                     $op = "mass $method";
                     $plural = 's';
                 }
-                require_once('lib/gamelog.php');
-                if (is_array($module)) {
-                    $lastModule = array_pop($module);
-                    $module = implode(', ', $module);
-                    $module .= ",`@ and `^$lastModule";
-                }
+                $lastModule = array_pop($module);
+                $module = implode(', ', $module);
+                $module .= ",`@ and `^$lastModule";
+            }
+            if ($op == 'mass' || $op == 'install') {
                 gamelog(
                     sprintf_translate(
                         '`Q%sed`@ the `^%s`@ module%s.',
@@ -78,6 +74,7 @@ function changelog_dohook($hook, $args)
             }
             break;
         case 'header-about':
+        case 'about':
             addnav('About LoGD');
             addnav('View Changelog', 'runmodule.php?module=changelog&ret=about');
             break;
