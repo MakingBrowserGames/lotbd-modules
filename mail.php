@@ -12,6 +12,8 @@ function mail_getmoduleinfo(): array
         'allowanonymous' => true,
         'settings' => [
             'length' => 'How long should replies be?, int| 2048',
+            'post_master' => 'Acctid of the post master:, viewonly',
+            'password' => 'Password of post master:, viewonly',
         ],
         'prefs' => [
             'Mail Preferences, title',
@@ -36,15 +38,32 @@ function mail_install(): bool
     // Originators
     // id | origin | acctid | owner | invitor | dateissued
     $mail = db_prefix('mail');
+    $accounts = db_prefix('accounts');
     db_query(
         "ALTER TABLE $mail 
         CHANGE sent DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
     );
+    $password = md5(rand(0, 100).time());
+    db_query(
+        "INSERT INTO $accounts (name, password)
+        VALUES ('`^Post Master', '$password')"
+    );
+    $sql = db_query("SELECT acctid FROM accounts WHERE name = '`^Post Master' LIMIT 1");
+    $row = db_fetch_assoc($sql);
+    debug($row);
+    set_module_setting('post_master', $row['acctid']);
+    set_module_setting('password', $password);
+    //Create account here to use as a 'Post Master';
     return true;
 }
 
 function mail_uninstall(): bool
 {
+    $accounts = db_prefix('accounts');
+    $settings = get_all_module_settings();
+    db_query(
+        "DELETE FROM $accounts WHERE name = '`^Post Master'"
+    );
     return true;
 }
 
@@ -53,6 +72,11 @@ function redirectToInbox(string $hook, array $args): array
     global $SCRIPT_NAME;
     if ($SCRIPT_NAME == 'mail.php' || $hook == 'force') {
         header('Location: runmodule.php?module=mail&op=inbox');
+    }
+    if (httpget('op') == 'view') {
+        $id = httpget('id');
+        $args['Add to Convo'] = "runmodule.php?module=mail&op=addUser&id=$id";
+        $args['Leave Convo'] = "runmodule.php?module=mail&op=leave&id=$id";
     }
     return $args;
 }
@@ -145,7 +169,7 @@ function displayMailHeader(): bool
         [
             'Inbox' => 'runmodule.php?module=mail&op=inbox',
             'Compose' => 'runmodule.php?module=mail&op=compose',
-            'Contacts' => 'runmodule.php?module=mail&op=contacts'
+            //'Contacts' => 'runmodule.php?module=mail&op=contacts'
         ]
     );
     rawoutput(
@@ -354,6 +378,7 @@ function mailView(): bool
             <form action='runmodule.php?module=mail&op=title&id={$id}'
                 class='message-title-edit' id='message-subject-form'
                 method='POST'>
+                <input type='hidden' name='id' value='$id'>
                 <input name='message-subject-edit'
                     value='{$title}'>
                 <input type='submit' value='Submit'>
@@ -396,6 +421,7 @@ function mailView(): bool
             <a name='last'></a>
         </div>"
     );
+    db_query("UPDATE $mail SET seen = 1 WHERE msgto = $user AND originator = $id");
     return false;
 }
 
@@ -419,8 +445,16 @@ function mailCompose(): bool
     $accounts = db_prefix('accounts');
     $to = httpPostClean('message-to');
     $search = implode('%', str_split($to));
+    $timeOut = date(
+        'Y-m-d H:i:s',
+        strtotime('-' . getsetting('LOGINTIMEOUT', 900) . ' seconds')
+    );
+    $extraSql = "loggedin = 1 AND laston > '$timeOut'";
+    if ($to != '') {
+        $extraSql = "(name LIKE '%$search%' OR login LIKE '%$search%')";
+    }
 
-    output("`@");
+    output("<div class='mail-inbox'>`@", true);
     rawoutput(
         "<div class='message-to' id='message-to'>
         Who would you like to message?</span><br>
@@ -436,7 +470,7 @@ function mailCompose(): bool
     );
     $sql = db_query(
         "SELECT name, login, loggedin, acctid FROM $accounts
-        WHERE (name LIKE '%$search%' OR login LIKE '%$search%')
+        WHERE $extraSql
         ORDER BY loggedin DESC LIMIT 0, 10"
     );
     while ($row = db_fetch_assoc($sql)) {
@@ -458,19 +492,148 @@ function mailCompose(): bool
             </form>
         </div>"
     );
+    debug($contacts);
     rawoutput(
         "<form action='runmodule.php?module=mail&op=newMessage' id='new-message'
                 class='new-message' method='POST'>
             <input type='text' name='subject' id='subject'
-                placeholder='Message Subject'>
+                placeholder='Message Subject' required>
             <div class='message-reply' id='message-reply'>
                 <input type='hidden' name='to' id='to' value='{$row['msgfrom']}'>
                 <textarea name='reply' id='message-reply-form'
                     class='input'></textarea>
                 <input type='submit' value=' Send'>
             </div>
-        </form>"
+        </form>
+        </div>"
     );
+    return false;
+}
+
+function mailTitle(): bool
+{
+    global $session;
+    $mail = db_prefix('mail');
+    $title = httpPostClean('message-subject-edit');
+    $id = httpPostClean('id');
+    db_query("UPDATE $mail SET subject = '$title' WHERE originator = $id");
+    header("Location: runmodule.php?module=mail&op=view&id=$id");
+    return false;
+}
+
+function mailAddUser(): bool
+{
+    global $session;
+    if (!canViewMessage((int) httpget('id'))) {
+        header("Location: mail.php");
+        exit;
+    }
+    $id = httpget('id');
+    $accounts = db_prefix('accounts');
+    $to = httpPostClean('message-to');
+    $search = implode('%', str_split($to));
+    $timeOut = date(
+        'Y-m-d H:i:s',
+        strtotime('-' . getsetting('LOGINTIMEOUT', 900) . ' seconds')
+    );
+    $extraSql = "loggedin = 1 AND laston > '$timeOut'";
+    if ($to != '') {
+        $extraSql = "(name LIKE '%$search%' OR login LIKE '%$search%')";
+    }
+
+    output("<div class='mail-inbox'>`@", true);
+    rawoutput(
+        "<div class='message-to' id='message-to'>
+        Who would you like to add to this message?</span><br>
+            <form action='runmodule.php?module=mail&op=addUser&id=$id'
+                method='POST'>
+                <input type='text' name='message-to' id='message-to' value='{$to}'>
+                <input type='submit' value='Search'>
+            </form>
+            <table>
+            <thead>
+                <th>User</th>
+            </thead>"
+    );
+    $sql = db_query(
+        "SELECT name, login, loggedin, acctid FROM $accounts
+        WHERE $extraSql
+        ORDER BY loggedin DESC LIMIT 0, 10"
+    );
+    while ($row = db_fetch_assoc($sql)) {
+        output(
+            sprintf(
+                "<tr>
+                    <td>
+                    <a href='runmodule.php?module=mail&op=invite&user=%s&id=$id'>%s</a>
+                    </td>
+                </tr>",
+                $row['acctid'],
+                appoencode($row['name'])
+            ),
+            true
+        );
+    }
+    rawoutput(
+        "       </table>
+            </form>
+        </div>"
+    );
+    return false;
+}
+
+function mailInvite(): bool
+{
+    global $session;
+    if (!canViewMessage((int) httpget('id'))) {
+        header("Location: mail.php");
+        exit;
+    }
+    $mail = db_prefix('mail');
+    $msgTo = (int) httpget('user');
+    $id = (int) httpget('id');
+    $postMaster = (int) get_module_setting('post_master');
+    $sql = db_query("SELECT subject FROM $mail WHERE originator = $id LIMIT 1");
+    $row = db_fetch_assoc($sql);
+    db_query(
+        "INSERT INTO $mail (msgfrom, msgto, subject, body, originator)
+        VALUES ($postMaster,
+        $msgTo,
+        '{$row['subject']}',
+        'A user was invited to this conversation.',
+        $id)"
+    );
+    header('Location: mail.php');
+    return false;
+}
+
+function mailLeave(): bool
+{
+    global $session;
+    if (!canViewMessage((int) httpget('id'))) {
+        header('Location: mail.php');
+        exit;
+    }
+    $mail = db_prefix('mail');
+    $accounts = db_prefix('accounts');
+    $id = (int) httpget('id');
+    $postMaster = (int) get_module_setting('post_master');
+    db_query(
+        "UPDATE $mail SET msgto = $postMaster
+        WHERE msgto = {$session['user']['acctid']}"
+    );
+    db_query(
+        "DELETE FROM $mail WHERE msgfrom = {$session['user']['acctid']}"
+    );
+    db_query(
+        "INSERT INTO $mail (msgfrom, msgto, subject, body, originator)
+        VALUES ($postMaster,
+        $postMaster,
+        '{$row['subject']}',
+        '{$session['user']['name']} left this conversation. Their messages have been removed.',
+        $id)"
+    );
+    header('Location: mail.php');
     return false;
 }
 

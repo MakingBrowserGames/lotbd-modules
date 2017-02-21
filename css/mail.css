@@ -83,7 +83,7 @@
     margin-left: 3em;
     border: 1px solid rgba(50, 50, 50, .3);
     border-radius: 5px;
-    min-width: 55%;
+    min-width: 35%;
 }
 
 .mail-reply-from-me .message-details {
@@ -96,7 +96,7 @@
     margin-right: 3em;
     border: 1px solid rgba(234, 181, 35, .3);
     border-radius: 5px;
-    min-width: 55%;
+    min-width: 35%;
 }
 
 .message-details {
@@ -131,7 +131,7 @@
     width: 50px;
     margin-left: -10px;
     position: fixed;
-    z-index: -1;
+    z-index: 2;
     float: right;
 }
 
@@ -154,16 +154,20 @@
 .message-reply textarea {
     position: absolute;
     resize: none;
-    font-size: 12px;
+    padding-right: 8px;
+    padding: 5px;
+    font-family: Whitney, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    text-rendering: optimizeLegibility;
+    color: rgba(234, 181, 35, 1);
     background-color: transparent;
     border-radius: 0px;
     border: 0px;
     border-right: 0px solid #EAB523;
     box-sizing: border-box;
     width: calc(100% - 52px);
-    padding: 0px;
-    padding-left: 5px;
-    padding-right: 8px;
     margin: 2px;
     margin-top: 0px;
     display: inline;
