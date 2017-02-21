@@ -34,26 +34,33 @@ function mail_getmoduleinfo(): array
 
 function mail_install(): bool
 {
-    // CREATE ORIGINATORS TABLE. THIS WILL ACT AS MANAGEMENT OF WHO CAN VIEW GROUP MESSAGES.
-    // Originators
-    // id | origin | acctid | owner | invitor | dateissued
     $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
     db_query(
         "ALTER TABLE $mail 
         CHANGE sent DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
     );
-    $password = md5(rand(0, 100).time());
-    db_query(
-        "INSERT INTO $accounts (name, password)
-        VALUES ('`^Post Master', '$password')"
+    $sql = db_query(
+        "SELECT acctid FROM $accounts
+        WHERE name = '`^Post Master' LIMIT 1"
     );
-    $sql = db_query("SELECT acctid FROM accounts WHERE name = '`^Post Master' LIMIT 1");
-    $row = db_fetch_assoc($sql);
-    debug($row);
+    if (db_num_rows($sql) > 0) {
+        $row = db_fetch_assoc($sql);
+    }
+    else {
+        $password = md5(rand(0, 100).time());
+        db_query(
+            "INSERT INTO $accounts (name, password)
+            VALUES ('`^Post Master', '$password')"
+        );
+        $sql = db_query(
+            "SELECT acctid FROM accounts
+            WHERE name = '`^Post Master' LIMIT 1"
+        );
+        $row = db_fetch_assoc($sql);
+    }
     set_module_setting('post_master', $row['acctid']);
     set_module_setting('password', $password);
-    //Create account here to use as a 'Post Master';
     return true;
 }
 
