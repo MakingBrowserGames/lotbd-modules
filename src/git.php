@@ -2,15 +2,14 @@
 
 function git_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Git Management',
-        'author'=> '`&`bStephen Kise`b',
-        'version' => '0.2b',
+        'author' => 'Stephen Kise',
+        'version' => '0.2.1',
         'category' => 'Administrative',
-        'description' =>
-            'Manage the git repository.',
+        'description' => 'Manage the git repository.',
         'requires' => [
-            'changelog' => '0.1b |Stephen Kise, nope',
+            'changelog' => '0.1.0 |Stephen Kise, nope',
         ],
         'download' => 'nope',
         'settings' => [
@@ -18,7 +17,6 @@ function git_getmoduleinfo()
             'modules' => 'Recent status of the modules:, viewonly',
         ]
     ];
-    return $info;
 }
 
 function git_install()

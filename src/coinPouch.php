@@ -1,11 +1,11 @@
 <?php
 
-function coin_pouch_getmoduleinfo()
+function coinPouch_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Coin Pouch',
         'author' => 'Stephen Kise',
-        'version' => '0.1b',
+        'version' => '0.1.0',
         'category' => 'Gameplay',
         'description' => 'Adds ability to create a coin pouch.',
         'settings' => [
@@ -15,22 +15,21 @@ function coin_pouch_getmoduleinfo()
             'stage' => "Stage of player's coin pouch, viewonly| 100",
         ]
     ];
-    return $info;
 }
 
-function coin_pouch_install()
+function coinPouch_install()
 {
     module_addhook('charstats');
     module_addhook('footer-bank');
     return true;
 }
 
-function coin_pouch_uninstall()
+function coinPouch_uninstall()
 {
     return true;
 }
 
-function coin_pouch_dohook($hook, $args)
+function coinPouch_dohook($hook, $args)
 {
     switch ($hook) {
         case 'charstats':

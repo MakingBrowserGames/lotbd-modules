@@ -2,9 +2,9 @@
 
 function switch_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Switch Accounts',
-        'author'=> '`&`bStephen Kise`b',
+        'author' => '`&`bStephen Kise`b',
         'version' => '0.1',
         'category' => 'Miscellaneous',
         'description' =>
@@ -17,7 +17,6 @@ function switch_getmoduleinfo()
             'accounts' => 'Accounts that this player has validated:, viewonly| []',
         ],
     ];
-    return $info;
 }
 
 function switch_install()

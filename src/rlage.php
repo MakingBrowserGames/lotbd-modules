@@ -2,10 +2,10 @@
 
 function rlage_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Real Life Age',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Account',
         'description' =>
             'Keep data of player\'s real age, to check for age appropriate content.',
@@ -17,7 +17,6 @@ function rlage_getmoduleinfo()
             'is_adult' => 'Is this player an adult?, bool| 0',
         ],
     ];
-    return $info;
 }
 
 function rlage_install()

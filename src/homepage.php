@@ -1,10 +1,10 @@
 <?php
 function homepage_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' =>  'New Homepage',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Miscellaneous',
         'description' =>
             'A custom home page to make the theme more unique.',
@@ -18,7 +18,6 @@ function homepage_getmoduleinfo()
             'Logout count:, viewonly| 0',
         ],
     ];
-    return $info;
 }
 
 function homepage_install()

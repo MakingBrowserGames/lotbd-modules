@@ -2,10 +2,10 @@
 
 function lumberyard_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'The Lumberyard',
         'author' => 'Stephen Kise',
-        'version' => '0.1b',
+        'version' => '0.0.1',
         'category' => 'Gameplay',
         'description' => 'Adds the lumberyard area for the woodcutting skill.',
         'override_forced_nav' => 'true',
@@ -14,7 +14,6 @@ function lumberyard_getmoduleinfo()
             'time' => 'Last time the player ran a task, viewonly| 0000-00-00 00:00:00',
         ],
     ];
-    return $info;
 }
 
 function lumberyard_install()

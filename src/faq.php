@@ -1,11 +1,18 @@
 <?php
 
+/**
+ * Introduces new module hook 'faq-list'.
+ * Arguments work like ['Name' => 'runmodule.php?module=api&op=file&subop=func'].
+ * Modules that hook into faq-list should use their file name for 'file' and
+ * function name for 'func'. This file and specific function are later called
+ * for automatic execution.
+ */
 function faq_getmoduleinfo()
 {
     return [
         'name' => 'Server FAQ',
         'author' => 'Stephen Kise',
-        'version' => '1.0',
+        'version' => '1.0.0',
         'category' => 'Administrative',
         'description' => 'Replaces the current FAQ with a more modular system',
         'allowanonymous' => true,
@@ -21,6 +28,7 @@ function faq_install()
 {
     module_addhook('village');
     module_addhook('shades');
+    module_addhook('css');
     return true;
 }
 
@@ -32,14 +40,15 @@ function faq_uninstall()
 function faq_dohook($hook, $args)
 {
     switch ($hook) {
+        case 'css':
+            $args['FAQ'] = 'faq';
+            break;
         case 'village':
         case 'shades':
             blocknav('petition.php?op=faq');
+            addnav($args['infonav']);
             if ($hook == 'shades') {
                 addnav('Other');
-            }
-            else {
-                addnav($args['infonav']);
             }
             addnav('!?Read the FAQ!', 'runmodule.php?module=faq', false, true);
             break;
@@ -49,7 +58,6 @@ function faq_dohook($hook, $args)
 
 function faq_run()
 {
-    echo "<link rel='stylesheet' href='modules/css/faq.css' />";
     $op = httpget('op');
     if (httpget('subop') != '') {
         $subOp = httpget('subop');

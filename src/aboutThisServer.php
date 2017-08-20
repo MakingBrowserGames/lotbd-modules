@@ -5,7 +5,7 @@ function aboutThisServer_getmoduleinfo()
     return [
         'name' => 'About this Server',
         'author' => 'Stephen Kise',
-        'version' => '1.0',
+        'version' => '1.0.1',
         'category' => 'Administrative',
         'description' => 'Changes the way the about page is displayed.',
         'allowanonymous' => true,
@@ -13,7 +13,8 @@ function aboutThisServer_getmoduleinfo()
         'settings' => [
             'name' => 'Name of the server:, text| Legend of the Green Dragon',
             'short_name' => 'Short name of the server, text| LotGD',
-            'message' => 'Describe your server:, textarea| This is an LotGD server!',
+            'message' =>
+                'Describe your server:, textarea| This is an LotGD server!',
             'Make sure that you explain what your theme is!, note',
             'This message will be placed under the "About LotGD" section, note'
         ]
@@ -42,17 +43,19 @@ function aboutThisServer_dohook($hook, $args)
         case 'about':
         case 'footer-about':
             addnav("About $shortName");
-            foreach ($navbysection['About LoGD'] as $item => $data) {
-                blocknav($data[1]);
-                if (strpos($data[1], '?') !== false) {
-                    addnav($data[0], $data[1] . "&x=x");
+            if ($SCRIPT_NAME == 'about.php') {
+                foreach ($navbysection['About LoGD'] as $item => $data) {
+                    blocknav($data[1]);
+                    if (strpos($data[1], '?') !== false) {
+                        addnav($data[0], $data[1] . "&x=x");
+                    }
+                    else {
+                        addnav($data[0], $data[1] . "?x=x");
+                    }
                 }
-                else {
-                    addnav($data[0], $data[1] . "?x=x");
+                if (httpget('op') == '') {
+                    header('Location: runmodule.php?module=aboutThisServer');
                 }
-            }
-            if (httpget('op') == '' && $SCRIPT_NAME == 'about.php') {
-                header('Location: runmodule.php?module=aboutThisServer');
             }
             break;
         case 'index':

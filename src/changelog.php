@@ -2,14 +2,13 @@
 
 function changelog_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Changelog',
-        'author'=> '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.1.0',
         'category' => 'Administrative',
         'description' =>
             'Display all changes made on the server.',
-        'download' => 'nope',
         'allowanonymous' => true,
         'settings' => [
             'infonav' => 'Do you want to display this changelog in the village?, bool| 1',
@@ -19,7 +18,6 @@ function changelog_getmoduleinfo()
             'Note that you `Q`bneed`b two &quot;%s&quot;`0 for the changlog to work properly!, note',
         ],
     ];
-    return $info;
 }
 
 function changelog_install()

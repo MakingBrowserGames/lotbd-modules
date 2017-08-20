@@ -2,18 +2,17 @@
 
 function logins_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Login Data',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Account',
         'descriptions' => 'Allow players to see their recent logins.',
         'download' => 'nope',
         'prefs' => [
-            'data' => 'Current data collection of this user\'s latest logins, viewonly| []',
+            'data' => "User's latest logins, viewonly| []",
         ],
     ];
-    return $info;
 }
 
 function logins_install()

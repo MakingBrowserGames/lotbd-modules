@@ -4,7 +4,7 @@ function newDayIndicator_getmoduleinfo()
 {
     return [
         'name' => 'New Day Indicator',
-        'version' => '1.0',
+        'version' => '1.0.0',
         'author' => 'Joshua Ecklund, Stephen Kise',
         'category' => 'Quality of Life',
         'description' => 'Shows how close the new day is in the villages.',

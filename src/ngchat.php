@@ -4,8 +4,8 @@ function ngchat_getmoduleinfo()
 {
     return [
         'name' => 'Angular Chat',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Gameplay',
         'description' => 'A way of using angular and data binding to remake the commentary.',
         'allowanonymous' => true,

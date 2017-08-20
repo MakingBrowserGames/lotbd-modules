@@ -1,21 +1,20 @@
 <?php
 
-function creationcolor_getmoduleinfo()
+function creationColor_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Creation Color',
         'author' => '`&`bStephen Kise`b',
-        'version' => '1.0',
+        'version' => '1.0.0',
         'category' => 'Account',
         'description' => 'Characters start with one selected color.',
         'prefs' => [
-            'color' => 'Color the player chose upon account creation, viewonly| `&',
+            'color' => 'Color the player chose:, viewonly| `&',
         ]
     ];
-    return $info;
 }
 
-function creationcolor_install()
+function creationColor_install()
 {
     module_addhook('everyhit-loggedin');
     module_addhook('create-form');
@@ -24,12 +23,12 @@ function creationcolor_install()
     return true;
 }
 
-function creationcolor_uninstall()
+function creationColor_uninstall()
 {
     return true;
 }
 
-function creationcolor_dohook($hook, $args)
+function creationColor_dohook($hook, $args)
 {
     switch ($hook) {
         case 'everyhit-loggedin':
@@ -39,7 +38,7 @@ function creationcolor_dohook($hook, $args)
                 $session['user']['name'] = change_player_name(
                     $color = get_module_pref('color') . get_player_basename()
                 );
-                debuglog(sprintf("`2Default name color was missing. Automatically changed player base name to %s`2.", $color));
+                debuglog("`2Default name color was missing. Automatically changed player base name to $color`2.");
             }
             break;
         case 'create-form':
@@ -73,7 +72,7 @@ function creationcolor_dohook($hook, $args)
             set_module_pref(
                 'color',
                 httppost('color'),
-                'creationcolor',
+                'creationColor',
                 $args['acctid']
             );
             break;

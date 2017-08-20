@@ -5,11 +5,12 @@ function blockCoreNavs_getmoduleinfo()
     return [
         'name' => 'Core Blocknavs',
         'author' => 'Stephen Kise',
-        'version' => '1.0',
+        'version' => '1.0.0',
         'category' => 'Administrative',
         'description' => 'Removes some of core navs that are not necessary',
         'settings' => [
-            'block' => 'Which links should we block?, textarea| Separate with commas!'
+            'block' =>
+                'Which links should we block?, textarea| Separate with commas!'
         ]
     ];
 }

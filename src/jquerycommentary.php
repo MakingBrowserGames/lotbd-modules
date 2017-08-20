@@ -29,9 +29,9 @@
 
 function jquerycommentary_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'jQuery Commentary',
-        'author' => '`b`&Stephen Kise`b, and Nicolas Härter',
+        'author' => 'Stephen Kise, and Nicolas Härter',
         'version' => '1.2.5',
         'category' => 'Commentary',
         'download' => 'http://dragonsource/distro/get/commentary/jquerycommentary',
@@ -54,7 +54,6 @@ function jquerycommentary_getmoduleinfo()
             'current_section' => 'Current Commentary Section, viewonly| village',
         ]
     ];
-    return $info;
 }
 
 function jquerycommentary_install()

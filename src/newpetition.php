@@ -2,10 +2,10 @@
 
 function newpetition_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'New Petitions',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Administrative',
         'descriptions' => 'Revamp the petitions and the petition viewer.',
         'settings' => [

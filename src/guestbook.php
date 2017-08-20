@@ -2,17 +2,16 @@
 
 function guestbook_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Guest Book',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Account',
         'description' => 'Add a guestbook to the biographies where players can comment on each other.',
         'settings' => [
             'recent' => 'Recent guestbook transactions, viewonly| []',
         ],
     ];
-    return $info;
 }
 
 function guestbook_install()

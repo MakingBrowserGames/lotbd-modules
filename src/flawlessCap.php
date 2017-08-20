@@ -1,54 +1,52 @@
 <?php
 
-function flawlesscap_getmoduleinfo()
+function flawlessCap_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Flawless Fight Cap',
         'author' => 'Sixf00t4',
-        'version' => '1.0',
-        'category' => 'Forest',
+        'version' => '1.0.1',
+        'category' => 'Gameplay',
         'description' => 'Limits the number of flawless fight rewards.',
-        'download' => 'core_module',
         'settings' => [
-            'max' => 'How many flawless wins are allowed per day?, int| 10',
+            'max' => 'How many flawless wins are allowed per day?, int| 50',
         ],
         'prefs' => [
             'amount' => 'How many flawless wins today?, int| 0',
         ],
     ];
-    return $info;
 }
 
-function flawlesscap_install()
+function flawlessCap_install()
 {
     module_addhook('battle-victory');
     module_addhook('newday');
     return true;
 }
 
-function flawlesscap_uninstall()
+function flawlessCap_uninstall()
 {
     return true;
 }
 
-function flawlesscap_dohook($hook, $args)
+function flawlessCap_dohook($hook, $args)
 {
     switch($hook) {
         case 'battle-victory';
             global $options;
             $runonce = false;
-            if ($runonce !== false) break;
-            if (
-                $args['type'] == 'forest' &&
-                (!isset($args['diddamage']) || $args['diddamage'] != 1)
-            ) {
+            if ($runonce !== false) {
+                break;
+            }
+            if ($args['type'] == 'forest' &&
+                (!isset($args['diddamage']) || $args['diddamage'] != 1)) {
                 $runonce = true;
                 if (get_module_pref('amount') >= get_module_setting('max')) {
-                    $options['denyflawless'] = '`nYou have already received the maximum flawless fight rewards for today.`n`n`0';
+                    $options['denyflawless'] =
+                        '`nYou have received enough flawless fight rewards for today.`n`n`0';
+                    break;
                 }
-                else{
-                    increment_module_pref('amount');
-                }
+                increment_module_pref('amount');
             }
             break;
         case 'newday':

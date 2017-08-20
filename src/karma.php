@@ -2,10 +2,10 @@
 
 function karma_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Karma',
-        'author' => '`&`bStephen Kise`b',
-        'version' => '0.1b',
+        'author' => 'Stephen Kise',
+        'version' => '0.0.1',
         'category' => 'Account',
         'description' => 'Allow players to give and receive karma through bios and other actions.',
         'download' => 'nope',
@@ -14,7 +14,6 @@ function karma_getmoduleinfo()
             'given' => 'Players this user has given Karma to:, viewonly| []',
         ],
     ];
-    return $info;
 }
 
 function karma_install()

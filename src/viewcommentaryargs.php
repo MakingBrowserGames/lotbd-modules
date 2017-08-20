@@ -2,15 +2,14 @@
 
 function viewcommentaryargs_getmoduleinfo()
 {
-    $info = [
+    return [
         'name' => 'Additional Commentary Args',
-        'author'=> 'Stephen Kise',
+        'author' => 'Stephen Kise',
         'version' => '1.0',
         'category' => 'Administrative',
         'description' =>
             'Adds more variables to the viewcommentary args.'
     ];
-    return $info;
 }
 
 function viewcommentaryargs_install()
