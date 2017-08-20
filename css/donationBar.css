@@ -1,0 +1,11 @@
+.fund-drive-bar {
+    border: solid 1px black;
+    background-color: black;
+    border-collapse: collapse;
+    width: 150px;
+    height: 10px;
+}
+
+.fund-drive-filled {
+     background-color: #00FF00;
+}
