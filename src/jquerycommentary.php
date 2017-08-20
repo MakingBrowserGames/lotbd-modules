@@ -34,8 +34,8 @@ function jquerycommentary_getmoduleinfo()
         'author' => 'Stephen Kise, and Nicolas Härter',
         'version' => '1.2.5',
         'category' => 'Commentary',
-        'download' => 'http://dragonsource/distro/get/commentary/jquerycommentary',
-        'description' => 'Commentary that loads AJAX via jQuery statements, to replace the old prototype.js commentary, making the commentary friendly for other scripts. Edits were slightly made for Xythen.',
+        'description' =>
+            'Live commentary with extra features, powered by jQuery.',
         'override_forced_nav' => true,
         'settings' => [
             'message' => 'What should your message above the commentary input be?,text|Interject your own commentary?',

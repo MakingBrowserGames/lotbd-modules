@@ -7,8 +7,7 @@ function colorpicker_getmoduleinfo()
         'author' => 'Stephen Kise',
         'version' => '0.1.0',
         'category' => 'Administrative',
-        'description' =>
-            'Create colors on the fly!',
+        'description' => 'Create colors on the fly!',
         'download' => 'nope',
         'settings' => [
             'colors' => 'List of colors:, viewonly| []'

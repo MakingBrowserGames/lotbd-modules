@@ -4,7 +4,7 @@ function creationColor_getmoduleinfo()
 {
     return [
         'name' => 'Creation Color',
-        'author' => '`&`bStephen Kise`b',
+        'author' => 'Stephen Kise',
         'version' => '1.0.0',
         'category' => 'Account',
         'description' => 'Characters start with one selected color.',

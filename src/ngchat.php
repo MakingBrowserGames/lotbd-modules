@@ -7,7 +7,7 @@ function ngchat_getmoduleinfo()
         'author' => 'Stephen Kise',
         'version' => '0.0.1',
         'category' => 'Gameplay',
-        'description' => 'A way of using angular and data binding to remake the commentary.',
+        'description' => 'Uses angular and data binding to remake the commentary.',
         'allowanonymous' => true,
         'override_forced_nav' => true,
         'prefs' => [

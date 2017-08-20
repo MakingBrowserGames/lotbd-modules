@@ -7,7 +7,7 @@ function newpetition_getmoduleinfo()
         'author' => 'Stephen Kise',
         'version' => '0.0.1',
         'category' => 'Administrative',
-        'descriptions' => 'Revamp the petitions and the petition viewer.',
+        'description' => 'Revamp the petitions and the petition viewer.',
         'settings' => [
             'recaptcha_key' => 'What is the key for the reCAPTCHA form?, text|',
         ],

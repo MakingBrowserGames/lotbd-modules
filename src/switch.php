@@ -4,7 +4,7 @@ function switch_getmoduleinfo()
 {
     return [
         'name' => 'Switch Accounts',
-        'author' => '`&`bStephen Kise`b',
+        'author' => 'Stephen Kise',
         'version' => '0.1',
         'category' => 'Miscellaneous',
         'description' =>

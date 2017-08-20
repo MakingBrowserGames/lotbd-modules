@@ -7,7 +7,7 @@ function logins_getmoduleinfo()
         'author' => 'Stephen Kise',
         'version' => '0.0.1',
         'category' => 'Account',
-        'descriptions' => 'Allow players to see their recent logins.',
+        'description' => 'Allow players to see their recent logins.',
         'download' => 'nope',
         'prefs' => [
             'data' => "User's latest logins, viewonly| []",

@@ -7,8 +7,7 @@ function changelog_getmoduleinfo()
         'author' => 'Stephen Kise',
         'version' => '0.1.0',
         'category' => 'Administrative',
-        'description' =>
-            'Display all changes made on the server.',
+        'description' => 'Display all changes made on the server.',
         'allowanonymous' => true,
         'settings' => [
             'infonav' => 'Do you want to display this changelog in the village?, bool| 1',

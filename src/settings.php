@@ -14,7 +14,7 @@ function settings_getmoduleinfo()
 {
     $info = [
         'name' => 'Settings',
-        'author' => '`&`bStephen Kise`b',
+        'author' => 'Stephen Kise',
         'version' => '0.0.1',
         'category' => 'Miscellaneous',
         'description' =>
