@@ -356,12 +356,19 @@ function mailInbox(): bool
                     <th colspan='2'>Message</th>
                     <th>Received</th>
                 </thead>");
-    $sql = db_query(
-        "SELECT * FROM (SELECT m.subject, m.originator, m.sent, mo.*, a.name FROM $mail m
-            INNER JOIN $mailOrigins mo ON m.originator = mo.origin
+    debug("SELECT * FROM (SELECT m.subject, m.sent, m.originator, s.name
+            FROM $mail m INNER JOIN $mailOrigins mo ON m.originator = mo.origin
             INNER JOIN $accounts a ON mo.acctid = a.acctid
+            INNER JOIN $accounts s ON s.acctid = m.msgfrom
             WHERE a.acctid = $user GROUP BY origin, messageid DESC)
-        AS tmp GROUP BY origin ORDER BY sent DESC"
+        AS tmp GROUP BY origin");
+    $sql = db_query(
+        "SELECT * FROM (SELECT m.subject, m.sent, m.originator, s.name
+            FROM $mail m INNER JOIN $mailOrigins mo ON m.originator = mo.origin
+            INNER JOIN $accounts a ON mo.acctid = a.acctid
+            INNER JOIN $accounts s ON s.acctid = m.msgfrom
+            WHERE a.acctid = $user GROUP BY originator, messageid DESC)
+        AS tmp GROUP BY originator"
     );
     while ($row = db_fetch_assoc($sql)) {
         rawoutput(
