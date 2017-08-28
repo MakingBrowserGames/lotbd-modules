@@ -34,6 +34,7 @@ function mail_getmoduleinfo(): array
 
 function mail_install(): bool
 {
+    require_once('lib/tabledescriptor.php');
     $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
     db_query(
@@ -50,15 +51,46 @@ function mail_install(): bool
     else {
         $password = md5(rand(0, 100).time());
         db_query(
-            "INSERT INTO $accounts (name, password)
-            VALUES ('`^Post Master', '$password')"
+            "INSERT INTO $accounts (name, login, password)
+            VALUES ('`^Post Master', 'postmaster', '$password')"
         );
+        debug(db_error());
         $sql = db_query(
             "SELECT acctid FROM accounts
             WHERE name = '`^Post Master' LIMIT 1"
         );
         $row = db_fetch_assoc($sql);
+
+        debug(db_error());
     }
+    synctable(
+        'mail_origins',
+        [
+            'id' => [
+                'name' => 'id',
+                'type' => 'int(11) unsigned',
+                'extra' => 'auto_increment'
+            ],
+            'origin' => [
+                'name' => 'origin',
+                'type' => 'int(11) unsigned'
+            ],
+            'acctid' => [
+                'name' => 'acctid',
+                'type' => 'int(11) unsigned'
+            ],
+            'invitor' => [
+                'name' => 'invitor',
+                'type' => 'int(11) unsigned'
+            ],
+            'key-PRIMARY' => [
+                'name' => 'PRIMARY',
+                'type' => 'primary key',
+                'unique' => '1',
+                'columns' => 'id'
+            ],
+        ]
+    );
     set_module_setting('post_master', $row['acctid']);
     set_module_setting('password', $password);
     return true;
@@ -153,6 +185,8 @@ function sendMail(
     if ($originator < 1) {
         $sql = db_query("SELECT MAX(originator) AS n FROM $mail LIMIT 1");
         $originator = db_fetch_assoc($sql)['n'] + 1;
+        addUserToOrigin($originator, $sender);
+        addUserToOrigin($originator, $recipient);
     }
     $sql = db_query(
         "INSERT INTO $mail (msgto, msgfrom, subject, body, originator)
@@ -238,6 +272,9 @@ function addUserToOrigin(int $origin, int $user): bool
             $isOriginalUser = true;
         }
     }
+    if (!$row) {
+        $isOriginalUser = true;
+    }
     if ($isOriginalUser != true) {
         debuglog(
             "tried to illegally invite a person to conversation id $origin"
@@ -251,6 +288,15 @@ function addUserToOrigin(int $origin, int $user): bool
     if (db_error()) {
         debug(db_error());
     }
+    return true;
+}
+
+function removeUserFromOrigin(int $origin, int $user): bool
+{
+    $mailOrigins = db_prefix('mail_origins');
+    $sql = db_query(
+        "DELETE FROM $mailOrigins WHERE acctid = $user AND origin = $origin"
+    );
     return true;
 }
 
@@ -298,6 +344,7 @@ function mailInbox(): bool
     global $session;
     $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
+    $mailOrigins = db_prefix('mail_origins');
     $user = (int) $session['user']['acctid'];
     rawoutput(
         "<div class='mail-inbox'>
@@ -310,10 +357,11 @@ function mailInbox(): bool
                     <th>Received</th>
                 </thead>");
     $sql = db_query(
-        "SELECT * FROM (SELECT m.*, a.name, a.loggedin FROM $mail AS m
-        RIGHT JOIN $accounts AS a ON m.msgfrom = a.acctid
-        WHERE (msgto = '$user' OR msgfrom = '$user') GROUP BY originator, messageid DESC) as tmp
-        GROUP BY tmp.originator ORDER BY seen+0 ASC"
+        "SELECT * FROM (SELECT m.subject, m.originator, m.sent, mo.*, a.name FROM $mail m
+            INNER JOIN $mailOrigins mo ON m.originator = mo.origin
+            INNER JOIN $accounts a ON mo.acctid = a.acctid
+            WHERE a.acctid = $user GROUP BY origin, messageid DESC)
+        AS tmp GROUP BY origin ORDER BY sent DESC"
     );
     while ($row = db_fetch_assoc($sql)) {
         rawoutput(
@@ -330,7 +378,7 @@ function mailInbox(): bool
                 </td>
             </tr>",
             $row['originator'],
-            $row['subject'],
+            trim($row['subject'])?:'No Subject',
             full_sanitize($row['name']),
             $row['sent']
             )
@@ -350,8 +398,10 @@ function mailView(): bool
     global $session;
     $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
+    $mailOrigins = db_prefix('mail_origins');
     $id = (int) httpget('id');
     $userOffset = (int) get_module_pref('user_offset');
+    $usersList = "`@In conversation: `^";
     $offset = (int) httpget('page');
     $offsetString = "LIMIT " . $offset * $userOffset .
         ", " . ($offset + 1) * $userOffset;
@@ -362,8 +412,17 @@ function mailView(): bool
                 $id
             )
         );
+        removeUserFromOrigin($id, $session['user']['acctid']);
         redirectToInbox('force', []);
     }
+    $sql = db_query(
+        "SELECT a.name FROM $accounts a
+        RIGHT JOIN $mailOrigins mo ON mo.acctid = a.acctid GROUP BY a.acctid"
+    );
+    while ($row = db_fetch_assoc($sql)) {
+        $usersList .= "`^{$row['name']}`^, ";
+    }
+    $usersList = appoencode(trim($usersList, ', '));
     $sql = db_query(
         "SELECT m.body, m.subject, m.sent, m.seen, m.msgfrom, a.name FROM $mail AS m
         RIGHT JOIN $accounts AS a ON m.msgfrom = a.acctid
@@ -373,7 +432,7 @@ function mailView(): bool
     $sortedMessages = [];
     while ($row = db_fetch_assoc($sql)) {
         //debug($row);
-        $title = $row['subject'];
+        $title = trim($row['subject'])?:'No Subject';
         $row['body'] = stripslashes($row['body']);
         $row['body'] = nl2br($row['body']);
         array_push($sortedMessages, $row);
@@ -413,6 +472,7 @@ function mailView(): bool
     }
     rawoutput(
         "
+            <div class='mail-users-in-convo'>{$usersList}</div><br/>
             <form action='runmodule.php?module=mail&op=reply&id={$id}'
                 method='POST'>
                 <div class='message-reply' id='message-reply' contenteditable>
@@ -603,14 +663,16 @@ function mailInvite(): bool
     $sql = db_query("SELECT subject FROM $mail WHERE originator = $id LIMIT 1");
     $row = db_fetch_assoc($sql);
     db_query(
-        "INSERT INTO $mail (msgfrom, msgto, subject, body, originator)
+        "INSERT INTO $mail (msgfrom, msgto, subject, body, sent, originator)
         VALUES ($postMaster,
         $msgTo,
         '{$row['subject']}',
-        'A user was invited to this conversation.',
+        'A user was invited to this conversation.', NOW(),
         $id)"
     );
-    header('Location: mail.php');
+    addUserToOrigin($id, $msgTo);
+    debuglog(db_error());
+    header("Location: runmodule.php?module=mail&op=view&id=$id");
     return false;
 }
 
@@ -625,6 +687,7 @@ function mailLeave(): bool
     $accounts = db_prefix('accounts');
     $id = (int) httpget('id');
     $postMaster = (int) get_module_setting('post_master');
+    removeUserFromOrigin($id, $session['user']['acctid']);
     db_query(
         "UPDATE $mail SET msgto = $postMaster
         WHERE msgto = {$session['user']['acctid']}"
@@ -632,6 +695,8 @@ function mailLeave(): bool
     db_query(
         "DELETE FROM $mail WHERE msgfrom = {$session['user']['acctid']}"
     );
+    $sql = db_query("SELECT subject FROM $mail WHERE originator = $id LIMIT 1");
+    $row = db_fetch_assoc($sql);
     db_query(
         "INSERT INTO $mail (msgfrom, msgto, subject, body, originator)
         VALUES ($postMaster,
@@ -655,6 +720,6 @@ function mailNewMessage(): bool
         $session['user']['acctid'],
         0
     );
-    //header("Location: runmodule.php?module=mail&op=inbox");
+    header("Location: runmodule.php?module=mail&op=inbox");
     return false;
 }

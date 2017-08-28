@@ -36,12 +36,9 @@
 }
 
 .mail-list-messages {
-    border-collapse: collapse;
-}
-
-.mail-list-messages {
     width: 100%;
     max-width: 1080px;
+    border-collapse: collapse;
 }
 
 .mail-list-messages tbody tr:hover,
@@ -105,7 +102,7 @@
     text-transform: capitalize;
 }
 
-.message-subject:hover {
+#message-subject {
     cursor: pointer;
 }
 
@@ -142,6 +139,8 @@
     background-color: #222;
     padding: 2px;
     border-radius: 3px;
+    border-color: transparent;
+    border: 2px solid transparent;
     -webkit-transition: all 0.15s ease-in-out;
     -moz-transition: all 0.15s ease-in-out;
     transition: all 0.15s ease-in-out;
