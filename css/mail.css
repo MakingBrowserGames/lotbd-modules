@@ -52,14 +52,13 @@
 }
 
 .mail-list-messages th:nth-child(2),
-.mail-list-messages td:nth-child(2),
 .mail-list-messages td:nth-child(3) {
     text-align: right;
     text-transform: capitalize;
 }
 
 .mail-list-messages td {
-    padding: 5px;
+    padding: 10px;
 }
 
 .mail-list-messages td:nth-child(2) ::before {
@@ -215,4 +214,12 @@
 
 .new-message {
     display: none;
+}
+
+.unseen {
+    border-left: 5px solid rgba(234, 181, 35, 1);
+}
+
+.seen {
+    border-left: 5px solid transparent;
 }

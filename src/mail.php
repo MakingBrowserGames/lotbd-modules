@@ -20,6 +20,7 @@ function mail_getmoduleinfo(): array
             'contacts' => 'Array of contacts saved:, viewonly| []',
             'blocked' => 'Array of people blocked:, viewonly| []',
             'user_offset' => 'How many responses should we display?, int| 10',
+            'seen' => 'Array of seen mail:, viewonly| {}',
         ],
         'install' => [
             'mailfunctions' => [
@@ -181,6 +182,7 @@ function sendMail(
     require_once('lib/sanitize.php');
     $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
+    $mailOrigins = db_prefix('mail_origins');
     $message = addslashes(sanitizeHTML($message));
     if ($originator < 1) {
         $sql = db_query("SELECT MAX(originator) AS n FROM $mail LIMIT 1");
@@ -345,6 +347,7 @@ function mailInbox(): bool
     $mail = db_prefix('mail');
     $accounts = db_prefix('accounts');
     $mailOrigins = db_prefix('mail_origins');
+    $seen = json_decode(get_module_pref('seen'), true);
     $user = (int) $session['user']['acctid'];
     rawoutput(
         "<div class='mail-inbox'>
@@ -353,27 +356,24 @@ function mailInbox(): bool
             </form>
             <table class='mail-list-messages'>
                 <thead>
-                    <th colspan='2'>Message</th>
+                    <th>Subject</th>
+                    <th>Last Sender</th>
                     <th>Received</th>
                 </thead>");
-    debug("SELECT * FROM (SELECT m.subject, m.sent, m.originator, s.name
-            FROM $mail m INNER JOIN $mailOrigins mo ON m.originator = mo.origin
-            INNER JOIN $accounts a ON mo.acctid = a.acctid
-            INNER JOIN $accounts s ON s.acctid = m.msgfrom
-            WHERE a.acctid = $user GROUP BY origin, messageid DESC)
-        AS tmp GROUP BY origin");
     $sql = db_query(
         "SELECT * FROM (SELECT m.subject, m.sent, m.originator, s.name
             FROM $mail m INNER JOIN $mailOrigins mo ON m.originator = mo.origin
             INNER JOIN $accounts a ON mo.acctid = a.acctid
             INNER JOIN $accounts s ON s.acctid = m.msgfrom
             WHERE a.acctid = $user GROUP BY originator, messageid DESC)
-        AS tmp GROUP BY originator"
+        AS tmp GROUP BY originator ORDER BY sent DESC"
     );
     while ($row = db_fetch_assoc($sql)) {
+        $rowTime = strtotime($row['sent']);
+        $prefTime = strtotime($seen[$row['originator']]);
         rawoutput(
             sprintf(
-            "<tr name='messages' data-originator='%s'>
+            "<tr name='messages' data-originator='%s'%s>
                 <td>
                     <span class='mail-message-subject'>%s</span>
                 </td>
@@ -385,6 +385,7 @@ function mailInbox(): bool
                 </td>
             </tr>",
             $row['originator'],
+            ($rowTime > $prefTime ? "class='unseen'" : "class='seen'"),
             trim($row['subject'])?:'No Subject',
             full_sanitize($row['name']),
             $row['sent']
@@ -408,6 +409,8 @@ function mailView(): bool
     $mailOrigins = db_prefix('mail_origins');
     $id = (int) httpget('id');
     $userOffset = (int) get_module_pref('user_offset');
+    $seen = json_decode(get_module_pref('seen'), true);
+    $seen[$id] = date("Y-m-d H:i:s");
     $usersList = "`@In conversation: `^";
     $offset = (int) httpget('page');
     $offsetString = "LIMIT " . $offset * $userOffset .
@@ -422,6 +425,7 @@ function mailView(): bool
         removeUserFromOrigin($id, $session['user']['acctid']);
         redirectToInbox('force', []);
     }
+    set_module_pref('seen', json_encode($seen, true));
     $sql = db_query(
         "SELECT a.name FROM $accounts a
         RIGHT JOIN $mailOrigins mo ON mo.acctid = a.acctid GROUP BY a.acctid"
