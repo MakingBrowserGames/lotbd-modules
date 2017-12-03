@@ -5,7 +5,7 @@ function mail_getmoduleinfo(): array
     return [
         'name' => 'New Mail',
         'author' => 'Stephen Kise',
-        'version' => '0.0.1',
+        'version' => '0.0.2',
         'category' => 'Gameplay',
         'description' => 'Replaces the current mail system with a mature one.',
         'override_forced_nav' => true,
@@ -40,7 +40,7 @@ function mail_install(): bool
     $accounts = db_prefix('accounts');
     db_query(
         "ALTER TABLE $mail 
-        CHANGE sent DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        CHANGE sent sent DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
     );
     $sql = db_query(
         "SELECT acctid FROM $accounts
@@ -94,6 +94,7 @@ function mail_install(): bool
     );
     set_module_setting('post_master', $row['acctid']);
     set_module_setting('password', $password);
+    module_addhook('everyfooter-loggedin');
     return true;
 }
 
@@ -105,6 +106,44 @@ function mail_uninstall(): bool
         "DELETE FROM $accounts WHERE name = '`^Post Master'"
     );
     return true;
+}
+
+function mail_dohook(string $hook, array $args): array
+{
+    switch ($hook) {
+        case 'mailfunctions':
+            return redirectToInbox($hook, $args);
+            break;
+        case 'bioinfo':
+            return mailContactLink($hook, $args);
+            break;
+        case 'everyfooter-loggedin':
+            global $header, $footer, $session;
+            $mail = db_prefix('mail');
+            $timeStamps = json_decode(get_module_pref('seen', 'mail'), true);
+            $total = 0;
+            foreach ($timeStamps as $id => $sent) {
+                $sent = date('Y-m-d H:i:s', strtotime($sent) + 18000);
+                $sql = db_query("SELECT COUNT(messageid) AS c FROM $mail WHERE sent > '$sent' AND originator = $id");
+                $row = db_fetch_assoc($sql);
+                if ($row['c'] > 0) {
+                    $total += $row['c'];
+                }
+            }
+            $sql = db_query("SELECT COUNT(messageid) AS c FROM $mail WHERE seen = 0 AND msgto = {$session['user']['acctid']} AND originator NOT IN (" . implode(array_keys($timeStamps), ', ') .")");
+            $row = db_fetch_assoc($sql);
+            $total += $row['c'];
+            if ($total > 0) {
+                $new = appoencode(" `^`b($total)`b");
+            }
+            $mailLink = "<a href='mail.php' name='mailLink' class='mail-inbox-link'
+                onClick=\"" . popup("mail.php") . ";return false;\">
+                Mailbox$new
+                </a>";
+            $header = str_replace('{mail}', $mailLink, $header);
+            break;
+    }
+    return $args;
 }
 
 function redirectToInbox(string $hook, array $args): array
@@ -408,6 +447,7 @@ function mailView(): bool
     $accounts = db_prefix('accounts');
     $mailOrigins = db_prefix('mail_origins');
     $id = (int) httpget('id');
+    $user = (int) $session['user']['acctid'];
     $userOffset = (int) get_module_pref('user_offset');
     $seen = json_decode(get_module_pref('seen'), true);
     $seen[$id] = date("Y-m-d H:i:s");
@@ -428,7 +468,9 @@ function mailView(): bool
     set_module_pref('seen', json_encode($seen, true));
     $sql = db_query(
         "SELECT a.name FROM $accounts a
-        RIGHT JOIN $mailOrigins mo ON mo.acctid = a.acctid GROUP BY a.acctid"
+        RIGHT JOIN $mailOrigins mo ON mo.acctid = a.acctid
+        WHERE mo.origin = $id
+        GROUP BY a.acctid"
     );
     while ($row = db_fetch_assoc($sql)) {
         $usersList .= "`^{$row['name']}`^, ";
@@ -698,13 +740,14 @@ function mailLeave(): bool
     $accounts = db_prefix('accounts');
     $id = (int) httpget('id');
     $postMaster = (int) get_module_setting('post_master');
+    $seen = json_decode(get_module_pref('seen'), true);
+    unset($seen[$id]);
+    debug($seen);
+    set_module_pref('seen', json_encode($seen));
     removeUserFromOrigin($id, $session['user']['acctid']);
     db_query(
         "UPDATE $mail SET msgto = $postMaster
         WHERE msgto = {$session['user']['acctid']}"
-    );
-    db_query(
-        "DELETE FROM $mail WHERE msgfrom = {$session['user']['acctid']}"
     );
     $sql = db_query("SELECT subject FROM $mail WHERE originator = $id LIMIT 1");
     $row = db_fetch_assoc($sql);
