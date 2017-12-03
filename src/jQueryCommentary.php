@@ -272,7 +272,7 @@ function getChatMessages(): array
     $offset = "LIMIT " . ((0+$page)*13) . ", 13";
     $oocOffset = "LIMIT " . ((0+$ooc)*7) . ", 7";
     $user = $session['user'];
-    $user['allowednavs'] = unserialize($user['allowednavs']);
+    $user['allowednavs'] = json_decode($user['allowednavs']);
     $section = get_module_pref(
         'section',
         'jQueryCommentary',
@@ -362,7 +362,7 @@ function getChatMessages(): array
             )
         ]
     );
-    $session['user']['allowednavs'] = serialize($session['allowednavs']);
+    $session['user']['allowednavs'] = json_encode($session['allowednavs']);
     $navs = addslashes($session['user']['allowednavs']);
     db_query(
         "UPDATE $accounts SET allowednavs = '$navs',
