@@ -136,7 +136,7 @@ function mail_dohook(string $hook, array $args): array
             if ($total > 0) {
                 $new = appoencode(" `^`b($total)`b");
             }
-            $mailLink = "<a href='mail.php' name='mailLink' class='mail-inbox-link'
+            $mailLink = "<a href='mail.php' name='mailLink' class='mail-inbox-link motd'
                 onClick=\"" . popup("mail.php") . ";return false;\">
                 Mailbox$new
                 </a>";
