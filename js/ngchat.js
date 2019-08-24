@@ -1,5 +1,5 @@
 angular
-.module('LOTGD', [])
+.module('LOTBD', [])
 .controller('commentary', function ($scope, $http, $sce, $interval) {
     $scope.username = '';
     $scope.acctid = 0;

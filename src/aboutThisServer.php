@@ -11,12 +11,12 @@ function aboutThisServer_getmoduleinfo()
         'allowanonymous' => true,
         'override_forced_nav' => true,
         'settings' => [
-            'name' => 'Name of the server:, text| Legend of the Green Dragon',
-            'short_name' => 'Short name of the server, text| LotGD',
+            'name' => 'Name of the server:, text| Legend of the Blue Dragon',
+            'short_name' => 'Short name of the server, text| LotBD',
             'message' =>
-                'Describe your server:, textarea| This is an LotGD server!',
+                'Describe your server:, textarea| This is an LotBD server!',
             'Make sure that you explain what your theme is!, note',
-            'This message will be placed under the "About LotGD" section, note'
+            'This message will be placed under the "About LotBD" section, note'
         ]
     ];
 }
@@ -44,7 +44,7 @@ function aboutThisServer_dohook($hook, $args)
         case 'footer-about':
             addnav("About $shortName");
             if ($SCRIPT_NAME == 'about.php') {
-                foreach ($navbysection['About LoGD'] as $item => $data) {
+                foreach ($navbysection['About LoBD'] as $item => $data) {
                     blocknav($data[1]);
                     if (strpos($data[1], '?') !== false) {
                         addnav($data[0], $data[1] . "&x=x");

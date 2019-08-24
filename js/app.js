@@ -22,10 +22,11 @@ $(document).ready(function()
     if (typeof renewWhosHere == 'function') {
         renewWhosHere();
     }
-    $autoscroll
+    //$autoscroll
     reloadCommentary(true);
+    var chatTimeout = 0;
     setInterval(function() {
-        chatTimeout += $refresh;
+        chatTimeout += 5;
         if(chatTimeout > $timeout) {
             $('.live-commentary').html('Please click \'Refresh\' to reload the commentary!');
             $('.whoshere').html('...');
@@ -37,7 +38,7 @@ $(document).ready(function()
             }
             reloadCommentary();
         }
-    }, $refresh*1000);
+    }, 5*1000);
     $('#inputinsertcommentary').keypress(function(e) {
         var chatLastKeypress = chatTimeout;
         var input = $(this).val();
@@ -63,9 +64,9 @@ $(document).ready(function()
         }
         chatTimeout = 0;
     });
-/*$('.live-commentary').on('click', '.deleteCommentary', function(event){
+$('.live-commentary').on('click', '.deleteCommentary', function(event){
     $('.live-commentary').load(
-        'runmodule.php?module=jquerycommentary&ajax=1&section={$args['section']}&c={$session['counter']}&r=$r&rmvcmmnt='+$(this).attr('data-comment-id'));
+        'runmodule.php?module=jquerycommentary&ajax=1&section={$args[\'section\']}&c={$session[\'counter\']}&r=$r&rmvcmmnt='+$(this).attr('data-comment-id'));
 });
 });*/
 
@@ -103,7 +104,8 @@ $(document).ready(function() {
             "<div id='charsleftinsertcommentary' hidden></div>" +
             "<div id='previewtextinsertcommentary'></div>"
         );
-    if (localStorage['commentaryForm'].length > 0
+    if (typeof localStorage['commentaryForm'] !== "undefined"
+	&& localStorage['commentaryForm'].length > 0
         && typeof previewtextinsertcommentary != 'undefined') {
         previewtextinsertcommentary(localStorage['commentaryForm'], 1000);
     }
@@ -389,7 +391,7 @@ function decrementRP()
     getChatMessages();
 }
 
-/*
+
 function jquerypostcommentary() 
 {
     var postData = $('#inputinsertcommentary').val().replace('/(\<.*?\>)/', ' ');
@@ -412,7 +414,7 @@ function jquerypostcommentary()
     reloadCommentary(true);
     return false;
 }
-/*
+
 function reloadCommentary(force)
 {
     $('.is_typing').html(chatWhosTyping);
@@ -421,7 +423,7 @@ function reloadCommentary(force)
             myCommentID = comments.commentid;
             lastMessage = comments.last_message;
             if ((comments.last_comment != lastCommentID && lastCommentID != 0 && comments.last_section != 'blackhole' && $enableSounds == 1) || force == true) {
-                $('.live-commentary').load('runmodule.php?module=jquerycommentary&ajax=1&section={$args['section']}&c={$session['counter']}&r=$r');
+                $('.live-commentary').load('runmodule.php?module=jquerycommentary&ajax=1&section={$args[\'section\']}&c={$session[\'counter\']}&r=$r');
                 $.getJSON('runmodule.php?module=api&modulename=checkmail', function(messages) {
                     if (messages.length > 0) {
                         if (messages[0].seen == 1) {
@@ -440,7 +442,7 @@ function reloadCommentary(force)
                 }
             }
             else if (comments.last_comment < lastCommentID || (comments.last_section == 'blackhole' && comments.last_comment != lastCommentID)) {
-                $('.live-commentary').load('runmodule.php?module=jquerycommentary&ajax=1&section={$args['section']}&c={$session['counter']}&r=$r');
+                $('.live-commentary').load('runmodule.php?module=jquerycommentary&ajax=1&section={$args[\'section\']}&c={$session[\'counter\']}&r=$r');
                 if (typeof renewWhosHere == 'function') {
                     renewWhosHere();
                 }
@@ -501,4 +503,4 @@ function clearMail()
 $('.alerts').html('').animate({
     height: '0em'
 }, 500);
-}*/
+}

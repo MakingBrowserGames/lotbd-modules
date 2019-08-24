@@ -28,10 +28,10 @@ function newDayIndicator_dohook($hook, $args)
         case 'villagetext':
             $clockMessage = str_replace('`n', ' ', $args['clock']);
             $details = gametimedetails();
-            $secsToNewday = secondstonextgameday($details) - time();
-            $minutes = ltrim(date('i', $secsToNewday), '0');
-            $args['clock'] = "$clockMessage `@That means a new day is in " .
-                "`^$minutes`@ minutes!`n";
+            debug(date('i', secondstonextgameday()));
+            $secsToNewday = secondstonextgameday($details); // - time();
+            $args['clock'] = "$clockMessage `@That means a new day is in `^" .
+                date("H\\h i\\m s\\s", $secsToNewday) . "!`n";
             break;
     }
     return $args;

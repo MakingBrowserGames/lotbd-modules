@@ -258,7 +258,8 @@ function displayMailHeader(): bool
         "<div class='mail-header'>
             <ul>");
     foreach ($mailFunctions as $text => $link) {
-        rawoutput("<li><a href='$link'>$text</a></li>");
+	if (!is_array($link))
+       	    rawoutput("<li><a href='$link'>$text</a></li>");
     }
     rawoutput(
         "   </ul>

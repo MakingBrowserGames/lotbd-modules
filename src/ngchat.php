@@ -20,7 +20,7 @@ function ngchat_install()
 {
     module_addhook('api');
     // Make sure that the document loads the DraNGon module and executes before chat does.
-    module_addhook_priority('javascript', 80);
+    module_addhook_priority('javascript', 100);
     module_addhook('blockcommentarea');
     module_addhook('everyheader-loggedin');
     // Avoid tampering with all of the footer modules.
@@ -53,7 +53,7 @@ function ngchat_dohook($hook, $args)
             ];
             break;
         case 'javascript':
-            echo "<script src='modules/js/ngchat.js'></script>";
+            rawoutput("<script src='modules/js/ngchat.js'></script>");
             break;
         case 'blockcommentarea':
             global $SCRIPT_NAME, $session, $ngBlock;
@@ -162,7 +162,7 @@ function ngchatGetCommentsForSection()
         laston = '$date'
         WHERE acctid = '{$session['user']['acctid']}'"
     );
-    $deleted =  ($session['user']['superuser'] & SU_EDIT_COMMENTS ? "" : "AND deleted = '0'");
+    $deleted = ($session['user']['superuser'] & SU_EDIT_COMMENTS ? "" : "AND deleted = '0'");
     $sql = db_query(
         $str = "SELECT comm.*, acc.name FROM
         (
