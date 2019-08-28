@@ -30,7 +30,7 @@ function dag_getmoduleinfo(){
 }
 
 function dag_install(){
-	require_once("modules/dag/install.php");
+	require_once("modules/src/dag/install.php");
 	$args = func_get_args();
 	return call_user_func_array("dag_install_private",$args);
 }
@@ -43,13 +43,13 @@ function dag_uninstall(){
 }
 
 function dag_dohook($hookname, $args){
-	require_once("modules/dag/dohook.php");
+	require_once("modules/src/dag/dohook.php");
 	$args = func_get_args();
 	return call_user_func_array("dag_dohook_private",$args);
 }
 
 function dag_run(){
-	require_once("modules/dag/run.php");
+	require_once("modules/src/dag/run.php");
 	$args = func_get_args();
 	return call_user_func_array("dag_run_private",$args);
 }

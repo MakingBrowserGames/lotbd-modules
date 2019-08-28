@@ -65,7 +65,7 @@ function dagbandits_dohook($hookname,$args){
 				$session['user']['level']>get_module_setting("maxlevel")) {
 			set_module_pref("status",4);
 			output("`n`2You hear that Dag can't pay enough for adventurers of your stature, and you abandon the bounty.`0`n");
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(-1);
 		}
 		break;
@@ -85,7 +85,7 @@ function dagbandits_dohook($hookname,$args){
 			} else {
 				output("You hand Dag the assorted rings, and he grimaces before shrugging, and saying that they're not giving out rewards for those anymore.");
 			}
-			addnews("`&%s`^ has been heard boasting about defeating a huge group of bandits!`0",$session['user']['name']);
+			addnews("`&%s`^ has been heard boasting about defeating a huge group of bandits!`0",array($session['user']['name']));
 			set_module_pref("status",2);
 			require_once("modules/dagquests.php");
 			dagquests_alterrep(3);
@@ -202,7 +202,7 @@ function dagbandits_run(){
 				$session['user']['alive']=false;
 				$session['user']['hitpoints']=0;
 				addnews("%s's body turned up, filled with arrows!",
-						$session['user']['name']);
+						array($session['user']['name']));
 				addnav("Return to the News","news.php");
 			}
 			break;
@@ -286,7 +286,7 @@ function dagbandits_run(){
 			$session['user']['experience']*=0.9;
 			$session['user']['alive']=false;
 			debuglog("was killed by a pet of the bandits in the Forest.");
-			addnews("%s's body turned up, torn to shreds!",$session['user']['name']);
+			addnews("%s's body turned up, torn to shreds!",array($session['user']['name']));
 			addnav("Return to the News","news.php");
 		} else {
 			fightnav(true,true,"runmodule.php?module=dagbandits&fight=wolffighting");

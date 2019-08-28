@@ -1,6 +1,6 @@
 <?php
 function dag_run_private(){
-	require_once("modules/dag/misc_functions.php");
+	require_once("modules/src/dag/misc_functions.php");
 	global $session;
 	if (httpget('manage')!="true"){
 		page_header("Dag Durnick's Table");

@@ -33,7 +33,7 @@ function grassyfield_percent() {
 
 function grassyfield_install(){
 	module_addeventhook("forest",
-			"require_once(\"modules/grassyfield.php\");
+			"require_once(\"modules/src/grassyfield.php\");
 			 return grassyfield_percent();");
 	return true;
 }

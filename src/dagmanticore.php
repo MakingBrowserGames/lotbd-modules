@@ -64,7 +64,7 @@ function dagmanticore_dohook($hookname,$args){
 				$session['user']['level']>(get_module_setting("maxlevel")+1)){
 			set_module_pref("status",4);
 			output("`n`6You hear that another adventurer defeated the manticore which had slaughtered the travellers.`0`n");
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(-1);
 		}
 		break;
@@ -117,7 +117,7 @@ function dagmanticore_run(){
 		output("You leave that table, feeling a little cowardly.");
 		set_module_pref("status",4);
 		addnav("I?Return to the Inn","inn.php");
-		require_once("modules/dagquests.php");
+		require_once("modules/src/dagquests.php");
 		dagquests_alterrep(-1);
 		break;
 	case "search":
@@ -200,7 +200,7 @@ function dagmanticore_run(){
 			$session['user']['alive'] = false;
 			debuglog("was killed by a wolf on a trail.");
 			addnews("%s's body turned up, torn to shreds!",
-				$session['user']['name']);
+				array($session['user']['name']));
 			addnav("Return to the News","news.php");
 		} else {
 			fightnav(true,true,
@@ -268,10 +268,10 @@ function dagmanticore_run(){
 			}
 			output("You make your way back to the fork in the trail, and tell the next wagon the news on the way back to town.");
 			set_module_pref("status",2);
-			addnews("%s defeated a Manticore on the trails! The victims have been avenged!",$session['user']['name']);
+			addnews("%s defeated a Manticore on the trails! The victims have been avenged!",array($session['user']['name']));
 			villagenav();
 			strip_buff("manticorespike");
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(3);
 		} elseif ($defeat) {
 			output("`2You fall backwards to the ground as the final volley of spikes from the manticore pierces your skull.");
@@ -286,10 +286,10 @@ function dagmanticore_run(){
 			$session['user']['alive'] = false;
 			set_module_pref("status",3);
 			addnews("%s was slain by a Manticore on a trail!",
-					$session['user']['name']);
+					array($session['user']['name']));
 			addnav("Return to the News","news.php");
 			strip_buff("manticorespike");
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(-1);
 		} else {
 			fightnav(true,true,

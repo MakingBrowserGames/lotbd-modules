@@ -1,6 +1,6 @@
 <?php
 function dag_dohook_private($hookname,$args){
-	require_once("modules/dag/misc_functions.php");
+	require_once("modules/src/dag/misc_functions.php");
 	global $session;
 	switch($hookname){
 	case "pvpwin":

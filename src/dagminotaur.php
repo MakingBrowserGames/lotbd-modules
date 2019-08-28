@@ -96,7 +96,7 @@ function dagminotaur_dohook($hookname,$args){
 				output("`3`n`nYou hand Dag the minotaur's head, but Dag cannot find the bounty to pay you!");
 			}
 			set_module_pref("status",2);
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(2);
 			$args['questoffer']=1;
 			// complete after reward is given.
@@ -258,7 +258,7 @@ function dagminotaur_run(){
 			$session['user']['experience']*=0.9;
 			$session['user']['alive'] = false;
 			addnews("%s was slain by a Lion in the Caves!",
-					$session['user']['name']);
+					array($session['user']['name']));
 			addnav("Return to the News","news.php");
 		} else {
 			fightnav(true,true,
@@ -295,7 +295,7 @@ function dagminotaur_run(){
 			output("`2You lop off the beast's head, and stash the gruesome thing in your backpack.");
 			// Reward flag
 			set_module_pref("status",5);
-			addnews("%s defeated a Minotaur in the Caves! The deaths of many travellers have been avenged!",$session['user']['name']);
+			addnews("%s defeated a Minotaur in the Caves! The deaths of many travellers have been avenged!", array($session['user']['name']));
 			villagenav();
 			if ($session['user']['hitpoints'] <= 0) {
 				output("`n`n`^In one corner of the cave, amid the bones of a corpse, you spy the distinctive bottle of a healer's potion.");
@@ -318,7 +318,7 @@ function dagminotaur_run(){
 			// They fail it!
 			set_module_pref("status",3);
 			addnews("%s was slain by a Minotaur in the Caves!",
-					$session['user']['name']);
+					array($session['user']['name']));
 			addnav("Return to the News","news.php");
 			require_once("modules/dagquests.php");
 			dagquests_alterrep(-1);
