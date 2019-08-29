@@ -87,7 +87,7 @@ function dagbandits_dohook($hookname,$args){
 			}
 			addnews("`&%s`^ has been heard boasting about defeating a huge group of bandits!`0",array($session['user']['name']));
 			set_module_pref("status",2);
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(3);
 			$args['questoffer']=1;
 		}
@@ -386,7 +386,7 @@ function dagbandits_run(){
 			$session['user']['experience']*=0.9;
 			$session['user']['alive']=false;
 			set_module_pref("status",3);
-			require_once("modules/dagquests.php");
+			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(-2);
 			addnews("%s's body turned up, throat slit!",
 					$session['user']['name']);
