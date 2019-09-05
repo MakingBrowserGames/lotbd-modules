@@ -389,7 +389,7 @@ function dagbandits_run(){
 			require_once("modules/src/dagquests.php");
 			dagquests_alterrep(-2);
 			addnews("%s's body turned up, throat slit!",
-					$session['user']['name']);
+					array($session['user']['name']));
 			addnav("Return to the News","news.php");
 		} else {
 			fightnav(true,true,"runmodule.php?module=dagbandits&fight=banditfighting&bandit=$bandit");
